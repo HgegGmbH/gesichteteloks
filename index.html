@@ -44,7 +44,6 @@
         function InitGesichteteLoks(PasswortBenutzereingabe)
         {        
             var email = "kohlberg068897@gmail.com";
-            //Passwort ist Egon
 
             auth.signInWithEmailAndPassword(email, PasswortBenutzereingabe)
             .then((userCredential) =>
@@ -54,6 +53,7 @@
                 dataRef = database.ref();
 
                 IstAngemeldet = true;
+                setCookie("Passwort", PasswortBenutzereingabe)
                 Event_AnmeldungAbgeschlossen();
             })
             .catch((error) => 
@@ -137,11 +137,42 @@
 
             return formattedDate;
         }
+
+        function setCookie(name, value)
+        {
+            document.cookie = name + "=" + value + "; path=/";
+        }
+
+        function getCookie(name)
+        {
+            var cookieName = name + "=";
+            var cookies = document.cookie.split(';');
+
+            for (var i = 0; i < cookies.length; i++)
+            {
+                var cookie = cookies[i].trim();
+                if (cookie.indexOf(cookieName) === 0)
+                {
+                    return cookie.substring(cookieName.length, cookie.length);
+                }
+            }
+
+            return null;
+        }
+
+        function deleteCookie(name)
+        {
+            document.cookie = name + "=; path=/;";
+        }
+
+        function cookieExists(name)
+        {
+            return getCookie(name) !== null;
+        }
     </script>
 </head>
-<body class="text-center">
-    
-    <div class="container mt-5" id="AnmeldungFenster" style="display: block;"> 
+<body class="text-center">    
+    <div class="container mt-5" id="AnmeldungFenster" style="display: none;"> 
         <strong style="font-size: 20pt;">Gesichtete Loks Online</strong><br><br>
         <strong style="font-size: 25pt;">Authentifizierung</strong><br><br>
         <label>Passwort eingeben</label>
@@ -158,29 +189,18 @@
 
     <div class="container mt-5" id="Hauptseite" style="display: none;">          
         <div>
-            <br>
-            <h1 class="display-4">Gesichtete Loks der Konzerne</h1>
-            <br>
+            <br><h1 class="display-4">Gesichtete Loks der Konzerne</h1><br>
             <img style="width:50%" src="https://i.imgur.com/8QUYvH7_d.webp?maxwidth=760&fidelity=grand" alt="..." class="">
-    
             <br><br>
-            <hr>
-            <br>
+            <hr><br>
             <h1 class="display-4" style="font-size:xx-large;">Zusammenfassung</h1>
-            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><div class="spinner-border text-secondary" role="status" id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; text-align: center;"></div><br><strong id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>
-            <br>
-            
-            <br>
-            <hr>
-            <br>
-    
+            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><div class="spinner-border text-secondary" role="status" id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; text-align: center;"></div><br><strong id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
+            <br><hr><br>
             <h5 class="display-4">Fahrzeug hinzufügen</h5><br>
             <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">Fahrzeug hinzufügen</button><br><br>
             <button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary">ETR 170 suchen</button><br><br>
             <hr><br>
-    
-    
-    
+ 
             <h5 class="display-4">Loks</h5><br>
             <button onclick="AuflistungLoknummernStarten('1144', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1144</button><br><br>
             <button onclick="AuflistungLoknummernStarten('1016', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1016</button><br><br>
@@ -613,6 +633,15 @@
         }
 
         return AlleSichtungen;
+    }
+
+    if(cookieExists("Passwort"))
+    {
+        InitGesichteteLoks(getCookie("Passwort"))
+    }
+    else
+    {
+        SeiteWechseln("AnmeldungFenster")
     }
 </script>
 
