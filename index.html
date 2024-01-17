@@ -193,12 +193,11 @@
             <img style="width:50%" src="https://i.imgur.com/8QUYvH7_d.webp?maxwidth=760&fidelity=grand" alt="..." class="">
             <br><br>
             <hr><br>
-            <h1 class="display-4" style="font-size:xx-large;">Zusammenfassung</h1>
-            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><div class="spinner-border text-secondary" role="status" id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; text-align: center;"></div><br><strong id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
-            <br><hr><br>
             <h5 class="display-4">Fahrzeug hinzufügen</h5><br>
-            <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">Fahrzeug hinzufügen</button><br><br>
-            <button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary">ETR 170 suchen</button><br><br>
+            <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">FAHRZEUG HINZUFÜGEN</button><br><br>
+            <button onclick="SeiteWechseln('PruefzifferBerechnen')" type="button" class="btn btn-secondary">PRUEFZIFFER BERECHNEN</button><br><br>
+            <button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary">ETR 170 SUCHE</button><br><br>
+            <!-- <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info">LOKFINDER</button><br><br> -->
             <hr><br>
  
             <h5 class="display-4">Loks</h5><br>
@@ -227,7 +226,10 @@
             <button onclick="AuflistungLoknummernStarten('1063', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1063</button><br><br>
             <button onclick="AuflistungLoknummernStarten('2068', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2068</button><br><br>
             <button onclick="AuflistungLoknummernStarten('2070', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2070</button><br><br>
-            <hr><br>
+            <hr><br><br>
+            <h1 class="display-4" style="font-size:xx-large;">Zusammenfassung</h1>
+            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><div class="spinner-border text-secondary" role="status" id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; text-align: center;"></div><br><strong id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
+            <br>
 
             <!-- <button onclick="ManuellHinzufuegen()">ManuellHinzufuegen</button> -->
 
@@ -280,6 +282,12 @@
                 Bitte gib eine Wagennummer ein
             </div>
 
+            <br>
+
+            <h4><strong>Gesichtet Status:</strong></h4><br>
+            <div class="spinner-border text-secondary" role="status" id="ETR170Suche_GesichtetStatus_Ladezeichen" style="display: inline-block; text-align: center;"></div>
+            <h4 id="ETR170Suche_GesichtetStatus_Label">Keine Daten vorhanden</h4><br>
+
             <br><br><br><br>
         </div>
     </div>
@@ -315,6 +323,43 @@
         </div>
     </div>
 
+    
+    <div class="container mt-5" id="PruefzifferBerechnen" style="display: none;">
+        <br><h1 class="display-4">ÖBB PRÜFZIFFER BERECHNEN</h1><br>
+
+        <div class="form-group">
+            <input type="text" oninput="PruefzifferBerechnen_ElfstelligeNummer_TextChanged()" class="form-control" id="PruefzifferBerechnen_ElfstelligeNummer" aria-describedby="" placeholder="z.B: 91811144012" name="" value="">
+            <small id="" class="form-text text-muted text-left">Gib hier die 11 - stellige Nummer des Fahrzeuges ein.</small>
+            <br><br>
+            <div><strong>Information Vorterteil:</strong><br>
+                Bei Elektroloks: 9181<br>
+                Bei Dieselloks: 9281<br>
+                Bei Steuerwägen: 5081<br>
+                Bei Triebwägen: 9481<br>
+                Bei ETR170: 9483
+                </div>
+            <br><br>
+            <div style="font-size: xx-large; display: none;" id="PruefzifferBerechnen_PruefzifferDIV">Prüfziffer: <strong id="PruefzifferBerechnen_PruefzifferLabel">0</strong></div><br><br>
+            <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button>
+            <br><br><br><br><br>
+        </div>
+
+    </div>
+
+    <!-- <div class="container mt-5" id="Lokfinder" style="display: none; text-align: center;">     
+        <br><h1 class="display-4">ÖBB LOKFINDER</h1><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://th.bing.com/th/id/R.8a16da75355168a4aade088639bb74af?rik=7S4V5FwpjbfOAQ&pid=ImgRaw&r=0" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">A-ÖBB 9181 1216 229-5</h5>
+                <p class="card-text"></p>
+            </div>
+        </div>
+    </div> -->
+
+    
+
 </body>
 </html>
 
@@ -331,6 +376,12 @@
     var AbschlussHinzufuegenSeite = document.getElementById("AbschlussHinzufuegenSeite")
     var Hauptseite_AnzahlSichtungenGesamt = document.getElementById("Hauptseite_AnzahlSichtungenGesamt")
     var Hauptseite_AnzahlSichtungenGesamt_Ladezeichen = document.getElementById("Hauptseite_AnzahlSichtungenGesamt_Ladezeichen")
+    // var Lokfinder = document.getElementById("Lokfinder");
+    var PruefzifferBerechnen = document.getElementById("PruefzifferBerechnen");
+    var PruefzifferBerechnen_PruefzifferDIV = document.getElementById("PruefzifferBerechnen_PruefzifferDIV");
+    var PruefzifferBerechnen_ElfstelligeNummer = document.getElementById("PruefzifferBerechnen_ElfstelligeNummer");
+    var ETR170Suche_GesichtetStatus_Ladezeichen = document.getElementById("ETR170Suche_GesichtetStatus_Ladezeichen");
+    var ETR170Suche_GesichtetStatus_Label = document.getElementById("ETR170Suche_GesichtetStatus_Label");
 
     function AlleSeitenAusblenden()
     {
@@ -341,6 +392,8 @@
         AuflistungLoknummern.style.display = "none";
         AnmeldungFehlgeschlagen.style.display = "none";
         AbschlussHinzufuegenSeite.style.display = "none";
+        // Lokfinder.style.display = "none";
+        PruefzifferBerechnen.style.display = "none";
     }
 
     function SeiteWechseln(SeiteName)
@@ -352,11 +405,18 @@
         {    
             if(SeiteName == "Hauptseite")
             {
+                PruefzifferBerechnen_ElfstelligeNummer.value = "";
+                PruefzifferBerechnen_PruefzifferDIV.style.display = "none";
+                PruefzifferBerechnen_PruefzifferLabel.innerHTML = "?";
+
+                ETR170Suche_GesichtetStatus_Ladezeichen.style.display = "none"
+                ETR170Suche_GesichtetStatus_Label.innerHTML = "Keine Daten vorhanden"
+
                 Hauptseite_AnzahlSichtungenGesamt.innerHTML = "";
                 Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "inline-block"
                 var AlleSichtungen = await GetAlleSichtungen();
                 Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "none"
-                Hauptseite_AnzahlSichtungenGesamt.innerHTML = AlleSichtungen.length;
+                Hauptseite_AnzahlSichtungenGesamt.innerHTML = `${AlleSichtungen.length}`;
             }
         })()
     }
@@ -408,6 +468,7 @@
 
         var ausgabestring = ""
 
+        var BaureiheNummer = "";
 
         ETR170Auflistung.split(";").forEach(function (GesamterZug)
         {
@@ -421,16 +482,21 @@
 
                         if (ETR170_Nummer.startsWith("S"))
                         {
-                            ausgabestring += "<strong>I-SAD</strong> "
+                            ausgabestring += "<strong>I-SAD</strong> ";
+                            BaureiheNummer += "SETR170.";
                         }
                         else if (ETR170_Nummer.startsWith("I"))
                         {
-                            ausgabestring += "<strong>I-TI</strong> "
+                            ausgabestring += "<strong>I-TI</strong> ";
+                            BaureiheNummer += "TETR170.";
                         }
 
-                        ausgabestring += "ETR170.<strong>"
-                        ausgabestring += GesamterZug.split(".")[0].replace("S", "").replace("I", "")
-                        ausgabestring += "</strong><br><br>"
+                        var Zugnummer = GesamterZug.split(".")[0].replace("S", "").replace("I", "");
+
+                        ausgabestring += "ETR170.<strong>";
+                        ausgabestring += Zugnummer;
+                        ausgabestring += "</strong><br><br>";
+                        BaureiheNummer += Zugnummer;
 
                         var pos = 0
                         GesamterZug.split(".").forEach(function (WagenNummer2)
@@ -462,9 +528,34 @@
 
         if (ausgabestring == "" || Suchtext == "") {
             Ausgabe.innerHTML = "Leider keinen Zug gefunden"
+
+            ETR170Suche_GesichtetStatus_Ladezeichen.style.display = "none"
+            ETR170Suche_GesichtetStatus_Label.innerHTML = "Keine Daten vorhanden"
         }
         else {
-            Ausgabe.innerHTML = ausgabestring
+            Ausgabe.innerHTML = ausgabestring;
+
+            
+
+            (async () =>
+            {      
+                var Gesehen = false;
+
+                ETR170Suche_GesichtetStatus_Ladezeichen.style.display = "inline-block"
+                ETR170Suche_GesichtetStatus_Label.innerHTML = ""
+                
+                var AlleSichtungen = await GetAlleSichtungen();
+                for(Sichtung of AlleSichtungen)
+                {                    
+                    if(Sichtung == BaureiheNummer)
+                    {
+                        Gesehen = true;
+                    }
+                }
+
+                ETR170Suche_GesichtetStatus_Ladezeichen.style.display = "none"
+                ETR170Suche_GesichtetStatus_Label.innerHTML = Gesehen ? "Bereits gesichtet." : "Noch nicht gesichtet!";
+            })()
         }
     }
 </script>
@@ -628,12 +719,12 @@
                 var Nummer = SlashSplit[SlashSplit.length - 1]
                 var PushString = `${Baureihe.replace("Sichtungen/", "")}.${Nummer}`;
                 AlleSichtungen.push(PushString);
-                console.log(PushString)
             }
         }
 
         return AlleSichtungen;
     }
+
 
     if(cookieExists("Passwort"))
     {
@@ -754,3 +845,49 @@
     // }
 </script>
 
+<!-- Prüfziffer berechnen -->
+<script>
+    function PruefzifferBerechnen_ElfstelligeNummer_TextChanged()
+    {
+        var TextBoxInhalt = PruefzifferBerechnen_ElfstelligeNummer.value;
+
+        if(TextBoxInhalt.length == 11)
+        {
+            var Pruefziffer = OBB_Pruefziffer_Berechnen(TextBoxInhalt);
+
+            if(Pruefziffer != NaN && Pruefziffer != null && Pruefziffer != undefined && Pruefziffer.toString() != "NaN")
+            {
+                PruefzifferBerechnen_PruefzifferDIV.style.display = "inline-block";
+                PruefzifferBerechnen_PruefzifferLabel.innerHTML = Pruefziffer;
+            }
+            else
+            {
+                PruefzifferBerechnen_PruefzifferDIV.style.display = "none";
+                PruefzifferBerechnen_PruefzifferLabel.innerHTML = "?";
+            }    
+        }
+        else
+        {
+            PruefzifferBerechnen_PruefzifferDIV.style.display = "none";
+            PruefzifferBerechnen_PruefzifferLabel.innerHTML = "?";
+        }
+    }
+</script>
+
+<!-- Lokfinder -->
+<!-- <script>
+    GetStandort();
+    function GetStandort(SearchString)
+    {
+        fetch('https://konzern-apps.web.oebb.at/lok/index/1216.0229')
+        .then(response => response.json())
+        .then(data => {
+            // You can now access the data from the JSON object
+            console.log(data);
+        })
+        .catch(error => {
+            // There was an error making the request
+            console.error(error);
+        });
+    }
+</script> -->
