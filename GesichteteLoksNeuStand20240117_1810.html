@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesichtete Loks</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%C3%96BB_Logo_Pflatsch_neu.svg/452px-%C3%96BB_Logo_Pflatsch_neu.svg.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%C3%96BB_Logo_Pflatsch_neu.svg/452px-%C3%96BB_Logo_Pflatsch_neu.svg.png" type="image/x-icon">
+
+    <script>
+        var DatabaseURL = "https://gesichteteloks-901b4-default-rtdb.firebaseio.com/";
+
+        const firebaseApp = firebase.initializeApp(
+        { 
+            apiKey: "AIzaSyBe-q3xpq4-gXO3Kkn8UXS_1Jy-6NKZvPQ",
+            authDomain: "gesichteteloks-901b4.firebaseapp.com",
+            databaseURL: "https://gesichteteloks-901b4-default-rtdb.firebaseio.com",
+            projectId: "gesichteteloks-901b4",
+            storageBucket: "gesichteteloks-901b4.appspot.com",
+            messagingSenderId: "470915232996",
+            appId: "1:470915232996:web:8bdd1cefb91ff9aa6da8f1"
+        });
+
+        const db = firebaseApp.firestore();
+        const auth = firebaseApp.auth();
+
+        var database;
+        var dataRef;
+
+        var IstAngemeldet = false;
+
+        function InitGesichteteLoks(PasswortBenutzereingabe)
+        {        
+            var email = "kohlberg068897@gmail.com";
+
+            auth.signInWithEmailAndPassword(email, PasswortBenutzereingabe)
+            .then((userCredential) =>
+            {
+                console.log("Anmeldung erfolgreich:", userCredential.user.uid);
+                database = firebase.database();
+                dataRef = database.ref();
+
+                IstAngemeldet = true;
+                setCookie("Passwort", PasswortBenutzereingabe)
+                Event_AnmeldungAbgeschlossen();
+            })
+            .catch((error) => 
+            {
+                //alert(error)
+                IstAngemeldet = false;
+                deleteCookie("Passwort");
+                SeiteWechseln("AnmeldungFehlgeschlagen")
+            });
+        }
+
+        function GetVariable(Pfad)
+        {
+            return new Promise((resolve, reject) =>
+            {
+                dataRef.child(Pfad).once("value")
+                    .then((snapshot) =>
+                    {
+                        const variableninhalt = snapshot.val();
+                        resolve(variableninhalt);
+                    })
+                    .catch((error) =>
+                    {
+                        console.log("Fehler beim Lesen der Daten:", error.message);
+                        reject(error);
+                    });
+            });
+        }
+
+        function SetVariable(Pfad, neuerWert)
+        {
+            return new Promise((resolve, reject) =>
+            {
+                dataRef.child(Pfad).set(neuerWert)
+                    .then(() =>
+                    {
+                        console.log(`Erfolgr.geschrieben '${Pfad}', '${neuerWert}'`);
+                        resolve();
+                    })
+                    .catch((error) =>
+                    {
+                        console.log("Fehler beim Schreiben der Daten:", error.message);
+                        reject(error);
+                    });
+            });
+        }
+
+        function GetSubvariablen(Pfad)
+        {
+            return new Promise((resolve, reject) => {
+                dataRef.child(Pfad).once("value")
+                    .then((snapshot) => {
+                        const data = snapshot.val();
+                        if (data && typeof data === "object") {
+                            const subVariablesList = Object.keys(data).map(subVar => `${Pfad}/${subVar}`);
+                            resolve(subVariablesList);
+                        } else {
+                            resolve([]);
+                        }
+                    })
+                    .catch((error) => {
+                        console.log("Fehler beim Lesen der Daten:", error.message);
+                        reject(error);
+                    });
+            });
+        }
+
+        function formatDate(date)
+        {
+            if (!(date instanceof Date))
+            {
+                return "Ungültiges Datum";
+            }
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            const formattedDate = `${day}.${month}.${year}`;
+
+            return formattedDate;
+        }
+
+        function setCookie(name, value)
+        {
+            var expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + 30);
+
+            document.cookie = name + "=" + value + "; expires=" + expirationDate.toUTCString() + "; path=/";
+        }
+
+        function getCookie(name)
+        {
+            var cookieName = name + "=";
+            var cookies = document.cookie.split(';');
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.indexOf(cookieName) === 0) {
+                    return cookie.substring(cookieName.length, cookie.length);
+                }
+            }
+
+            return null;
+        }
+
+        function deleteCookie(name)
+        {
+            document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+
+        function cookieExists(name)
+        {
+            return getCookie(name) !== null;
+        }
+    </script>
+</head>
+<body class="text-center">    
+    <div class="container mt-5" id="AnmeldungFenster" style="display: none;"> 
+        <strong style="font-size: 20pt;">Gesichtete Loks Online</strong><br><br>
+        <strong style="font-size: 25pt;">Authentifizierung</strong><br><br>
+        <label>Passwort eingeben</label>
+        <input type="password" class="form-control" id="PasswortTextBox" aria-describedby="basic-addon3" placeholder="Passwort eingeben"><br><br>
+        <button type="button" onclick="InitGesichteteLoks(document.getElementById('PasswortTextBox').value)" class="btn btn-primary">Anmelden</button>
+    </div>
+
+    <div class="container mt-5" id="AnmeldungFehlgeschlagen" style="display: none;"> 
+        <strong style="font-size: 30pt;">Gesichtete Loks Online</strong><br><br>
+        <strong style="font-size: 35pt; color: rgb(204, 21, 21);">Authentifizierung fehlgeschlagen</strong><br><br>
+        <strong style="font-size: 20pt">Mögliche Ursachen:<br>- Falsches Passwort<br>- Keine Internetverbindung</strong><br><br>
+        <button type="button" onclick="location.reload()" class="btn btn-warning">Erneut versuchen</button>
+    </div>
+
+    <div class="container mt-5" id="Hauptseite" style="display: none;">          
+        <div>
+            <br><h1 class="display-4">Gesichtete Loks der Konzerne</h1><br>
+            <img style="width:50%" src="https://i.imgur.com/8QUYvH7_d.webp?maxwidth=760&fidelity=grand" alt="..." class="">
+            <br><br>
+            <hr><br>
+            <h1 class="display-4" style="font-size:xx-large;">Zusammenfassung</h1>
+            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><div class="spinner-border text-secondary" role="status" id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; text-align: center;"></div><br><strong id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
+            <br><hr><br>
+            <h5 class="display-4">Fahrzeug hinzufügen</h5><br>
+            <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">Fahrzeug hinzufügen</button><br><br>
+            <button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary">ETR 170 suchen</button><br><br>
+            <hr><br>
+ 
+            <h5 class="display-4">Loks</h5><br>
+            <button onclick="AuflistungLoknummernStarten('1144', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1144</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1016', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1016</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1116', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1116</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1216', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1216</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1293', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1293</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('2016', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2016</button><br><br>
+            <hr><br>
+    
+            <h5 class="display-4">Triebwagen</h5><br>
+            <button onclick="AuflistungLoknummernStarten('8073', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8073</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('8090', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8090</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4024', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4024</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4124', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4124</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4744', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4744</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4746', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4746</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4748', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4748</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('SETR170', '')" type="button" class="btn btn-danger">I-SAD ETR 170</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('TETR170', '')" type="button" class="btn btn-danger">I-TI ETR 170</button><br><br>
+            <hr><br>
+    
+            <h5 class="display-4">Verschub</h5><br>
+            <button onclick="AuflistungLoknummernStarten('1163', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1163</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1063', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1063</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('2068', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2068</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('2070', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2070</button><br><br>
+            <hr><br>
+
+            <!-- <button onclick="ManuellHinzufuegen()">ManuellHinzufuegen</button> -->
+
+            <br><br><br><br><br><br><br><br>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="FahrzeugHinzufuegen" style="display: none;">  
+        <div style="width:100%; border:hidden" class="text-center">
+            <h1 class="display-4">Neues Fahrzeug hinzufügen</h1>
+    
+            <br>
+            <hr>
+            <br>
+    
+            <div class="form-group">
+                <input type="text" class="form-control" id="FahrzeugHinzufuegen_Baureihe_TextBox" aria-describedby="" placeholder="1144 oder SETR170 oder TETR170" name="Baureihe" value="">
+                <small id="" class="form-text text-muted text-left">Gib hier die Baureihe des neu gesichteten Fahrzeuges ein</small>
+            </div>
+
+            <div class="form-group">
+                <input type="text" class="form-control" id="FahrzeugHinzufuegen_Nummer_TextBox" aria-describedby="" placeholder="125 oder 012 oder 218" name="Nummer" value="">
+                <small id="" class="form-text text-muted text-left">Gib hier die Dreistellige Nummer des neu gesichteten Fahrzeuges ein</small>
+            </div>
+
+            <br><div class="spinner-border text-secondary" role="status" id="FahrzeugHinzufuegen_Ladezeichen" style="display: none; text-align: center;"></div><br><br>
+            <button onclick="FahrzeugHinzufuegenFunktion(document.getElementById('FahrzeugHinzufuegen_Baureihe_TextBox').value, document.getElementById('FahrzeugHinzufuegen_Nummer_TextBox').value)" type="button" class="btn btn-success">Fahrzeug hinzufügen</button><br><br>
+            <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button><br><br><br><br><br>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="ETR170Suche" style="display: none;">  
+        <div class="text-center">
+            <br>
+            <br>
+            <h1>ETR 170 SUCHE</h1>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="">Wagennummer</span>
+                </div>
+                <input type="text" class="form-control" placeholder="3-stellig" id="ETR170Suche_Wagennummer_TextBox">
+            </div>
+
+            <button onclick="ETR170Suche_SucheButtonClicked()" type="button" class="btn btn-success">Suche starten</button><br><br>
+            <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button>
+            <br><br><br>
+            <h4>Ausgabe der Suche</h4>
+            <div class="alert alert-info mt-2" role="alert" id="ETR170Suche_Ausgabe_TextBox">
+                Bitte gib eine Wagennummer ein
+            </div>
+
+            <br><br><br><br>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="AuflistungLoknummern" style="display: none;">     
+        <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button>
+        <br><br><br>
+        <div style="width:100%; border:hidden" class="text-center">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" id="AuflistungLoknummern_Ueberschrift_Label"></th>
+                    </tr>
+                </thead>
+                <tbody id="AuflistungLoknummern_Tabelle">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="container mt-5" id="AbschlussHinzufuegenSeite" style="display: none;">     
+        <div class="text-center">
+            <br>
+            <br>
+            <h1><strong>Info</strong></h1><br><br>
+
+            <h2><strong id="AbschlussHinzufuegenSeite_Ueberschrift">Unbekannter Zustand</strong></h2><br><br>
+            <div class="alert alert-success mt-2" role="alert" id="AbschlussHinzufuegenSeite_BaureiheNummer">
+                Loknummmer
+            </div>
+            <br><br>
+            <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-secondary">Zum Hauptmenü</button>
+        </div>
+    </div>
+
+</body>
+</html>
+
+
+
+<!-- Seiten Switcher -->
+<script>
+    var AnmeldungFenster = document.getElementById("AnmeldungFenster")
+    var Hauptseite = document.getElementById("Hauptseite")
+    var FahrzeugHinzufuegen = document.getElementById("FahrzeugHinzufuegen")
+    var ETR170Suche = document.getElementById("ETR170Suche")
+    var AuflistungLoknummern = document.getElementById("AuflistungLoknummern")
+    var AnmeldungFehlgeschlagen = document.getElementById("AnmeldungFehlgeschlagen")
+    var AbschlussHinzufuegenSeite = document.getElementById("AbschlussHinzufuegenSeite")
+    var Hauptseite_AnzahlSichtungenGesamt = document.getElementById("Hauptseite_AnzahlSichtungenGesamt")
+    var Hauptseite_AnzahlSichtungenGesamt_Ladezeichen = document.getElementById("Hauptseite_AnzahlSichtungenGesamt_Ladezeichen")
+
+    function AlleSeitenAusblenden()
+    {
+        AnmeldungFenster.style.display = "none";
+        Hauptseite.style.display = "none";
+        FahrzeugHinzufuegen.style.display = "none";
+        ETR170Suche.style.display = "none";
+        AuflistungLoknummern.style.display = "none";
+        AnmeldungFehlgeschlagen.style.display = "none";
+        AbschlussHinzufuegenSeite.style.display = "none";
+    }
+
+    function SeiteWechseln(SeiteName)
+    {
+        AlleSeitenAusblenden();
+        document.getElementById(SeiteName).style.display = "inline-block";
+
+        (async () =>
+        {    
+            if(SeiteName == "Hauptseite")
+            {
+                Hauptseite_AnzahlSichtungenGesamt.innerHTML = "";
+                Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "inline-block"
+                var AlleSichtungen = await GetAlleSichtungen();
+                Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "none"
+                Hauptseite_AnzahlSichtungenGesamt.innerHTML = AlleSichtungen.length;
+            }
+        })()
+    }
+
+    function Event_AnmeldungAbgeschlossen()
+    {
+        SeiteWechseln("Hauptseite");
+    }
+</script>
+
+<!-- ETR 170 Sucher -->
+<script>
+    function ETR170Suche_SucheButtonClicked()
+    {
+        var ETR170Auflistung = "";
+
+        ETR170Auflistung += "I101.1019.1041.1058.1066.1033.1027;"
+        ETR170Auflistung += "I102.1076.1108.1116.1124.1090.1084;"
+        ETR170Auflistung += "I103.1134.1165.1173.1181.1157.1142;"
+        ETR170Auflistung += "I106.1316.1348.1355.1363.1336.1324;"
+        ETR170Auflistung += "I107.1373.1405.1413.1421.1397.1381;"
+        ETR170Auflistung += "I108.1431.1462.1470.1488.1454.1449;"
+        ETR170Auflistung += "I201.2017.2049.2056.2064.2031.2025;"
+        ETR170Auflistung += "I202.2074.2106.2114.2122.2098.2082;"
+        ETR170Auflistung += "I211.2611.2643.2650.2668.2635.2629;"
+        ETR170Auflistung += "I212.2678.2700.2718.2726.2692.2686;"
+        ETR170Auflistung += "I213.2736.2767.2775.2783.2759.2745;"
+        ETR170Auflistung += "I214.2793.2825.2833.2841.2817.2801;"
+        ETR170Auflistung += "I215.2850.2882.2890.2908.2874.2868;"
+        ETR170Auflistung += "I216.2918.2940.2957.2965.2932.2926;"
+        ETR170Auflistung += "I217.2975.3005.3013.3021.2999.2983;"
+        ETR170Auflistung += "I209.1498.1520.1538.1546.1512.1506;"
+        ETR170Auflistung += "I110.1555.1587.1595.1603.1579.1563;"
+        ETR170Auflistung += "S001.0011.0043.0050.0068.0035.0029;"
+        ETR170Auflistung += "S002.0078.0100.0118.0126.0092.0086;"
+        ETR170Auflistung += "S003.0136.0167.0175.0183.0159.0144;"
+        ETR170Auflistung += "S004.0193.0225.0233.0241.0217.0201;"
+        ETR170Auflistung += "S005.0250.0282.0290.0308.0274.0268;"
+        ETR170Auflistung += "S006.0318.0340.0357.0365.0332.0326;"
+        ETR170Auflistung += "S007.0375.0407.0415.0423.0399.0383;"
+        ETR170Auflistung += "S008.0433.0464.0472.0480.0456.0441;"
+        ETR170Auflistung += "S104.1191.1223.1231.1249.1215.1209;"
+        ETR170Auflistung += "S105.1258.1280.1298.1306.1272.1266;"
+        ETR170Auflistung += "S106.1431.1462.1470.1488.1454.1449;"
+
+        var titelElement = document.getElementById("ETR170Suche_Wagennummer_TextBox")
+        var Suchtext = titelElement.value
+        var Ausgabe = document.getElementById("ETR170Suche_Ausgabe_TextBox")
+
+        var ausgabestring = ""
+
+
+        ETR170Auflistung.split(";").forEach(function (GesamterZug)
+        {
+            GesamterZug.split(".").forEach(function (WagenNummer)
+            {
+                if (!WagenNummer.startsWith("I") && !WagenNummer.startsWith("S"))
+                {
+                    if (WagenNummer.substring(0, 3) == Suchtext)
+                    {
+                        var ETR170_Nummer = GesamterZug.split(".")[0];
+
+                        if (ETR170_Nummer.startsWith("S"))
+                        {
+                            ausgabestring += "<strong>I-SAD</strong> "
+                        }
+                        else if (ETR170_Nummer.startsWith("I"))
+                        {
+                            ausgabestring += "<strong>I-TI</strong> "
+                        }
+
+                        ausgabestring += "ETR170.<strong>"
+                        ausgabestring += GesamterZug.split(".")[0].replace("S", "").replace("I", "")
+                        ausgabestring += "</strong><br><br>"
+
+                        var pos = 0
+                        GesamterZug.split(".").forEach(function (WagenNummer2)
+                        {
+                            if (pos != 0)
+                            {
+                                if (pos == 1 || pos == 6)
+                                {
+                                    ausgabestring += "94 83 4 170 "
+                                }
+                                else
+                                {
+                                    ausgabestring += "94 83 0 170 "
+                                }
+
+
+                                ausgabestring += WagenNummer2.substring(0, 3)
+                                ausgabestring += "-"
+                                ausgabestring += WagenNummer2[3]
+                                ausgabestring += "<br>"
+                            }
+
+                            pos++
+                        })
+                    }
+                }
+            })
+        })
+
+        if (ausgabestring == "" || Suchtext == "") {
+            Ausgabe.innerHTML = "Leider keinen Zug gefunden"
+        }
+        else {
+            Ausgabe.innerHTML = ausgabestring
+        }
+    }
+</script>
+
+<!-- AuflistungLoknummern -->
+<script>
+    function AuflistungLoknummernStarten(Baureihe, Vorderteil)
+    {
+        (async () =>
+        {                 
+            var AlleGesichtetenLoksDieserBaureihe = await GetSubvariablen(`Sichtungen/${Baureihe}`);
+            var Konzern = "A-ÖBB";
+
+            if(Baureihe == "SETR170") { Konzern = "I-SAD" }
+            if(Baureihe == "TETR170") { Konzern = "I-TI" }
+
+            var AusgabeArray = []
+
+            for(VariablenPfad of AlleGesichtetenLoksDieserBaureihe)
+            {
+                var SlashSplit = VariablenPfad.split("/");
+                var Nummer = SlashSplit[SlashSplit.length - 1]
+                var Pruefziffer = "";
+                var BaureiheVerw = Baureihe;
+
+                if(Konzern == "A-ÖBB")
+                {
+                    Pruefziffer = `-${OBB_Pruefziffer_Berechnen(`${Vorderteil}${Baureihe}${Nummer}`)}`;
+                }
+                else
+                {
+                    BaureiheVerw = "ETR170";
+                }
+
+                AusgabeArray.push(`${Konzern} ${Vorderteil} ${BaureiheVerw} ${Nummer}${Pruefziffer}\n`);
+            }
+
+            AusgabeArray.sort();
+
+            SeiteWechseln("AuflistungLoknummern")
+            document.getElementById("AuflistungLoknummern_Ueberschrift_Label").innerHTML = `${Konzern} ${Vorderteil} ${Baureihe}<br>Bereits gesichtet: ${AusgabeArray.length}`;
+            document.getElementById("AuflistungLoknummern_Tabelle").innerHTML = "";
+            
+            for(Eintrag in AusgabeArray)
+            {
+                AuflistungLoknummern_Tabelle.innerHTML += 
+                `
+                <tr>
+                <td><img src="${GetImagePath(Baureihe)}" style=" width: 110px" alt="..." class=""> ${AusgabeArray[Eintrag]}</td>
+                </tr>`
+
+                
+            }
+        })()
+    }
+
+    function OBB_Pruefziffer_Berechnen(elevenDigitNumber)
+    {
+        try
+        {
+            if (elevenDigitNumber.length === 11)
+            {
+                let digits = [];
+                let checkDigit = 0;
+
+                for (let i = 0; i < elevenDigitNumber.length; i++)
+                {
+                    digits.push(parseInt(elevenDigitNumber[i]));
+                }
+
+                let twoOneMultiplier = 2;
+
+                for (let i = 0; i < digits.length; i++)
+                {
+                    digits[i] = digits[i] * twoOneMultiplier;
+
+                    if (twoOneMultiplier === 1)
+                    {
+                        twoOneMultiplier = 2;
+                    }
+                    else
+                    {
+                        twoOneMultiplier = 1;
+                    }
+                }
+
+                for (let i = 0; i < digits.length; i++)
+                {
+                    if (digits[i] > 9)
+                    {
+                        let digit1 = parseInt(digits[i].toString()[0]);
+                        let digit2 = parseInt(digits[i].toString()[1]);
+                        let digitSum = digit1 + digit2;
+
+                        digits[i] = digitSum;
+                    }
+                }
+
+                for (let i = 0; i < digits.length; i++)
+                {
+                    checkDigit += digits[i];
+                }
+
+                for (let i = 1; i <= 10; i++)
+                {
+                    let currentTenStep = i * 10;
+
+                    if (checkDigit <= currentTenStep)
+                    {
+                        checkDigit = currentTenStep - checkDigit;
+                        break;
+                    }
+                }
+
+                return checkDigit;
+            }
+            else
+            {
+                return 404;
+            }
+        }
+        catch (error)
+        {
+            return 404;
+        }
+    }
+
+    function GetImagePath(Baureihe)
+    {
+        if(Baureihe == "1144") { return "https://i.imgur.com/zJQZUUJ_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "1016" || Baureihe == "1116") { return "https://i.imgur.com/9s7W6Ya_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "1216") { return "https://i.imgur.com/2sJUog8_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "1293") { return "https://i.imgur.com/KaVi1wh_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "2016") { return "https://i.imgur.com/y5QyrQY_d.webp?maxwidth=760&fidelity=grand" }
+
+        if(Baureihe == "8073") { return "" }
+        if(Baureihe == "8090") { return "https://i.imgur.com/mtzPcSO_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "4024" || Baureihe == "4124") { return "https://i.imgur.com/hMzUNJj_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "4744" || Baureihe == "4746" ||Baureihe == "4748") { return "https://i.imgur.com/UEUApjB_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "SETR170" || Baureihe == "TETR170") { return "https://i.imgur.com/SfdxrJC_d.webp?maxwidth=760&fidelity=grand" }
+
+        if(Baureihe == "1163") { return "https://i.imgur.com/fG6XoXc_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "1063") { return "https://i.imgur.com/ZTTGVC6_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "2068") { return "https://i.imgur.com/hK37hfU_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "2070") { return "https://i.imgur.com/nuUqXQl_d.webp?maxwidth=760&fidelity=grand" }
+    }
+
+    async function GetAlleSichtungen()
+    {
+        var AlleSichtungen = [];
+
+        var AlleBaureihen = await GetSubvariablen("Sichtungen");
+
+        for(Baureihe of AlleBaureihen)
+        {
+            var AlleSichtungenDieserBaureihe = await GetSubvariablen(Baureihe);
+
+            for(Sichtung of AlleSichtungenDieserBaureihe)
+            {
+                var SlashSplit = Sichtung.split("/");
+                var Nummer = SlashSplit[SlashSplit.length - 1]
+                var PushString = `${Baureihe.replace("Sichtungen/", "")}.${Nummer}`;
+                AlleSichtungen.push(PushString);
+                console.log(PushString)
+            }
+        }
+
+        return AlleSichtungen;
+    }
+
+    if(cookieExists("Passwort"))
+    {
+        InitGesichteteLoks(getCookie("Passwort"))
+    }
+    else
+    {
+        SeiteWechseln("AnmeldungFenster")
+    }
+</script>
+
+<!-- Neues Fahrzeug hinzufuegen -->
+<script>
+    function NeuesFahrzeugHinzufuegenSeiteStarten()
+    {
+        document.getElementById("FahrzeugHinzufuegen_Baureihe_TextBox").value = "";
+        document.getElementById("FahrzeugHinzufuegen_Nummer_TextBox").value = "";
+
+        SeiteWechseln('FahrzeugHinzufuegen');
+    }
+
+    function FahrzeugHinzufuegenFunktion(Baureihe, Nummer)
+    {
+        if(
+            Baureihe == "1144" || 
+            Baureihe == "1016" || 
+            Baureihe == "1116" ||
+            Baureihe == "1216" ||
+            Baureihe == "1293" ||
+            Baureihe == "2016" ||
+            Baureihe == "8073" ||
+            Baureihe == "8090" ||
+            Baureihe == "4024" ||
+            Baureihe == "4124" ||
+            Baureihe == "4744" ||
+            Baureihe == "4746" ||
+            Baureihe == "4748" ||
+            Baureihe == "SETR170" ||
+            Baureihe == "TETR170" ||
+            Baureihe == "1163" ||
+            Baureihe == "1063" ||
+            Baureihe == "2068" ||
+            Baureihe == "2070"         
+        )
+        {
+            if(Nummer.length == 3)
+            {
+
+                (async () =>
+                {                 
+                    var Ladezeichen = document.getElementById("FahrzeugHinzufuegen_Ladezeichen")
+                    Ladezeichen.style.display = "inline-block"
+                    var NeueSichtung = `${Baureihe}.${Nummer}`;
+                    var AlleSichtungen = await GetAlleSichtungen();
+
+                    if(AlleSichtungen.includes(NeueSichtung))
+                    {
+                        AbschlussHinzufuegenSeiteAnzeigen(false, NeueSichtung)
+                    }
+                    else
+                    {
+                        var Zeit = new Date().getTime();
+                        await SetVariable(`Sichtungen/${Baureihe}/${Nummer}`, Nummer.toString())
+                        AbschlussHinzufuegenSeiteAnzeigen(true, NeueSichtung)
+                    }
+                    Ladezeichen.style.display = "none"
+                })()
+            }
+            else
+            {
+                alert("Fehlerhafte Eingabe der Nummer");
+            }
+        }
+        else
+        {
+            alert("Fehlerhafte Eingabe der Baureihe!");
+        }
+        
+        
+    }
+
+    function AbschlussHinzufuegenSeiteAnzeigen(LokWarNeu, BaureiheNummer)
+    {
+        SeiteWechseln("AbschlussHinzufuegenSeite")
+        var AbschlussHinzufuegenSeite_Ueberschrift = document.getElementById("AbschlussHinzufuegenSeite_Ueberschrift");
+        var AbschlussHinzufuegenSeite_BaureiheNummer = document.getElementById("AbschlussHinzufuegenSeite_BaureiheNummer");
+        
+        if(LokWarNeu)
+        {
+            AbschlussHinzufuegenSeite_Ueberschrift.innerHTML = "Neue Sichtung!";
+            AbschlussHinzufuegenSeite_BaureiheNummer.classList = "alert alert-success mt-2";
+            AbschlussHinzufuegenSeite_BaureiheNummer.innerHTML = BaureiheNummer;
+        }
+        else
+        {
+            AbschlussHinzufuegenSeite_Ueberschrift.innerHTML = "Bereits gesehen ...";
+            AbschlussHinzufuegenSeite_BaureiheNummer.classList = "alert alert-warning mt-2";
+            AbschlussHinzufuegenSeite_BaureiheNummer.innerHTML = BaureiheNummer;
+        }
+    }
+
+    // function ManuellHinzufuegen()
+    // {
+    //     (async () =>
+    //     {   
+    //         var Eingabe = "8073 039;1016 012;1144 252;1144 243;1144 242"
+            
+    //         var Lines = Eingabe.split(';');
+    //         for(i in Lines)
+    //         {
+    //             var Baureihe = Lines[i].split(" ")[0];
+    //             var Nummer = Lines[i].split(" ")[1];
+    //             await SetVariable(`Sichtungen/${Baureihe}/${Nummer}`, Nummer.toString())
+    //             console.log(`Lok Nr    ${i}   (${Baureihe}.${Nummer})    manuell hinzugefügt`)
+    //         }
+
+    //     })()   
+    // }
+</script>
+
