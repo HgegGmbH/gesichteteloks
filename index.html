@@ -60,10 +60,9 @@
             {
                 //alert(error)
                 IstAngemeldet = false;
+                deleteCookie("Passwort");
                 SeiteWechseln("AnmeldungFehlgeschlagen")
             });
-
-           
         }
 
         function GetVariable(Pfad)
@@ -140,7 +139,10 @@
 
         function setCookie(name, value)
         {
-            document.cookie = name + "=" + value + "; path=/";
+            var expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + 30);
+
+            document.cookie = name + "=" + value + "; expires=" + expirationDate.toUTCString() + "; path=/";
         }
 
         function getCookie(name)
@@ -148,11 +150,9 @@
             var cookieName = name + "=";
             var cookies = document.cookie.split(';');
 
-            for (var i = 0; i < cookies.length; i++)
-            {
+            for (var i = 0; i < cookies.length; i++) {
                 var cookie = cookies[i].trim();
-                if (cookie.indexOf(cookieName) === 0)
-                {
+                if (cookie.indexOf(cookieName) === 0) {
                     return cookie.substring(cookieName.length, cookie.length);
                 }
             }
@@ -162,7 +162,7 @@
 
         function deleteCookie(name)
         {
-            document.cookie = name + "=; path=/;";
+            document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         }
 
         function cookieExists(name)
