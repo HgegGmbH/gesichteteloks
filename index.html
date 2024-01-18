@@ -177,7 +177,8 @@
         <strong style="font-size: 25pt;">Authentifizierung</strong><br><br>
         <label>Passwort eingeben</label>
         <input type="password" class="form-control" id="PasswortTextBox" aria-describedby="basic-addon3" placeholder="Passwort eingeben"><br><br>
-        <button type="button" onclick="InitGesichteteLoks(document.getElementById('PasswortTextBox').value)" class="btn btn-primary">Anmelden</button>
+        <button type="button" onclick="InitGesichteteLoks(document.getElementById('PasswortTextBox').value)" class="btn btn-primary">Anmelden</button><br><br>
+        <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info">DIREKT ZUM LOKFINDER</button><br><br><br><br>
     </div>
 
     <div class="container mt-5" id="AnmeldungFehlgeschlagen" style="display: none;"> 
@@ -197,7 +198,7 @@
             <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">FAHRZEUG HINZUFÜGEN</button><br><br>
             <button onclick="SeiteWechseln('PruefzifferBerechnen')" type="button" class="btn btn-secondary">PRUEFZIFFER BERECHNEN</button><br><br>
             <button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary">ETR 170 SUCHE</button><br><br>
-            <!-- <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info">LOKFINDER</button><br><br> -->
+            <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info">LOKFINDER</button><br><br>
             <hr><br>
  
             <h5 class="display-4">Loks</h5><br>
@@ -346,23 +347,358 @@
 
     </div>
 
-    <!-- <div class="container mt-5" id="Lokfinder" style="display: none; text-align: center;">     
+    <div class="container mt-5" id="Lokfinder" style="display: none; text-align: center;">     
         <br><h1 class="display-4">ÖBB LOKFINDER</h1><br>
+        <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger" id="Lokfinder_ZurueckZumHauptmenueButton">Zurück zum Hauptmenü</button><br><br><br>
         
         <div class="card mx-auto" style="width: 18rem;">
-            <img class="card-img-top" src="https://th.bing.com/th/id/R.8a16da75355168a4aade088639bb74af?rik=7S4V5FwpjbfOAQ&pid=ImgRaw&r=0" alt="Card image cap">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/49079362403_62ce7fc222_b.jpg" alt="Card image cap">
             <div class="card-body">
-                <h5 class="card-title">A-ÖBB 9181 1216 229-5</h5>
-                <p class="card-text"></p>
+                <h5 class="card-title"><strong>A-ÖBB 9181 1216 229-5</strong></h5>
+                <p class="card-text" id="Standort_1216.0229"></p>
             </div>
-        </div>
-    </div> -->
+        </div><br><br>
 
-    
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/der-oebb-klimaticket-railjet-faehrt-1298298.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 5081 8090 744-8</strong></h5>
+                <p class="card-text" id="Standort_8090.0744"></p>
+            </div>
+        </div><br><br>
 
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://css.trainspo.com/uploads/photos/1024/510-64082v0_20150513.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4124 014-3</strong></h5>
+                <p class="card-text" id="Standort_4124.0014"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/4124-013-6-am-06september-2014-924192.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4124 013-5</strong></h5>
+                <p class="card-text" id="Standort_4124.0013"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/201706/OBB_Talent_4020_130_S45_20664_Wien_Ottakring_13_06_2017_Wolfgang_Kaeppl_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 130-8</strong></h5>
+                <p class="card-text" id="Standort_4024.0130"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://eisenbahn.blog/wp-content/uploads/2023/12/image-6-1024x683.png" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 123-3</strong></h5>
+                <p class="card-text" id="Standort_4024.0123"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://bahnbilder.warumdenn.net/pics/Bilder_13/4024_120_4023_Bruck_Mur_Stausee_21072013.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 120-9</strong></h5>
+                <p class="card-text" id="Standort_4024.0120"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/1200/4024-040-bei-kraubath-am-1218501.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 118-3</strong></h5>
+                <p class="card-text" id="Standort_4024.0118"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/oebb-4024-103-macht-ja-1030381.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 103-5</strong></h5>
+                <p class="card-text" id="Standort_4024.0103"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/4024-089-mit-4124-022-635262.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 089-6</strong></h5>
+                <p class="card-text" id="Standort_4024.0089"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/201510/4024_088_REX_5305_Hall_in_Tirol_30_09_2015_Tiroler_Cobra_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 088-8</strong></h5>
+                <p class="card-text" id="Standort_4024.0088"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/%C3%96BB_4024_085_Mastercard_03.jpg/2560px-%C3%96BB_4024_085_Mastercard_03.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 085-4</strong></h5>
+                <p class="card-text" id="Standort_4024.0085"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/oebb-4024-016-0-am-30november-1192080.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 016-9</strong></h5>
+                <p class="card-text" id="Standort_4024.0016"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://fotowelten.startbilder.de/1200/4024-015-2-stand-linz-hbf060422-772514.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 015-1</strong></h5>
+                <p class="card-text" id="Standort_4024.0015"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/201604/4024_014_R_1713_Kindberg_im_MYrztal_27_03_2016_Werner_Grill_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 014-4</strong></h5>
+                <p class="card-text" id="Standort_4024.0014"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.railroadpics.net/photos/4853_Siemens-Vectron-MS_1293-200.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1293 200-2</strong></h5>
+                <p class="card-text" id="Standort_1293.0200"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/32303629117_0e36140a35_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1293 018-8</strong></h5>
+                <p class="card-text" id="Standort_1293.0018"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.elektrolok.de/bilder2011/rwy_1216210_WienWestbahnhof_061011_1.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1216 210-5</strong></h5>
+                <p class="card-text" id="Standort_1216.0210"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.ytimg.com/vi/Mxz27wFRpCI/maxresdefault.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1216 022-4</strong></h5>
+                <p class="card-text" id="Standort_1216.0022"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/1551/24462444043_b59bda12d3_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1216 019-0</strong></h5>
+                <p class="card-text" id="Standort_1216.0019"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/1200/oebb-1216-012-5-nightjet-mit-1262727.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1216 012-5</strong></h5>
+                <p class="card-text" id="Standort_1216.0012"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/51218338845_9fc7aa9993_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 276</strong></h5>
+                <p class="card-text" id="Standort_1116.0276"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.ebayimg.com/images/g/-5cAAOSwnIleoDYZ/s-l400.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 250-2</strong></h5>
+                <p class="card-text" id="Standort_1116.0250"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/202111/1116_249_rj_797_penk_tauernbahn_30_10_2021_martin_kolenig_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 249-4</strong></h5>
+                <p class="card-text" id="Standort_1116.0249"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.elektrolokarchiv.de/images/basic/siem_20952_70.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 231-2</strong></h5>
+                <p class="card-text" id="Standort_1116.0231"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/d/d9/%C3%96BB_1116_229_in_Graz_Hauptbahnhof.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 229-6</strong></h5>
+                <p class="card-text" id="Standort_1116.0229"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/9/9d/OEBB_1116_222_Zuerich_HB_250615.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 222-1</strong></h5>
+                <p class="card-text" id="Standort_1116.0222"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.ebayimg.com/images/g/q1gAAOSwTy5fJfkz/s-l1600.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 200-7</strong></h5>
+                <p class="card-text" id="Standort_1116.0200"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.railroadpics.net/photos/4482_Siemens-ES-64-U2_1116-199.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 199-1</strong></h5>
+                <p class="card-text" id="Standort_1116.0199"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.pinimg.com/originals/c5/e6/34/c5e634102c5bc93bce3ae085ce855cb0.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 195-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0195"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/51332743500_c9ff1a9120_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 182-7</strong></h5>
+                <p class="card-text" id="Standort_1116.0182"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.modellbahn.at/images/product_images/original_images/jc28100.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 181-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0181"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/7/7d/%C3%96BB_1116_165_Bio_N%C3%96_Wien_8941_M%C3%B61997.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 165-2</strong></h5>
+                <p class="card-text" id="Standort_1116.0165"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/51380134310_629f830242_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 158-7</strong></h5>
+                <p class="card-text" id="Standort_1116.0158"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.railroadpics.net/photos/1911_Siemens-ES-64-U2_1116-157.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 157-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0157"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.ytimg.com/vi/zDQS7QjBXlw/maxresdefault.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 153-8</strong></h5>
+                <p class="card-text" id="Standort_1116.0153"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/1116-143-montan-mit-gueterzug-795164.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 143-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0143"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/1116-077-michelangelogalileo-war-am-799775.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 077-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0077"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.railroadpics.net/photos/1121_Siemens-ES-64-U2_1116-016.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 016-7</strong></h5>
+                <p class="card-text" id="Standort_1116.0016"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/201703/1063_039__Leoben_GYss_02_03_2017_gergo_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1063 039-2</strong></h5>
+                <p class="card-text" id="Standort_1063.0039"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/7/79/%C3%96BB_1016_023_8530_M%C3%B61997.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1016 023-4</strong></h5>
+                <p class="card-text" id="Standort_1016.0023"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.elektrolokarchiv.de/images/basic/siem_20369_65.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1016 021-8</strong></h5>
+                <p class="card-text" id="Standort_1016.0021"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/856/41843488560_79eed52f7b_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1016 020-0</strong></h5>
+                <p class="card-text" id="Standort_1016.0020"></p>
+            </div>
+        </div><br><br>
+    </div>
+
+    <br><br><br><br>
 </body>
 </html>
-
 
 
 <!-- Seiten Switcher -->
@@ -376,7 +712,7 @@
     var AbschlussHinzufuegenSeite = document.getElementById("AbschlussHinzufuegenSeite")
     var Hauptseite_AnzahlSichtungenGesamt = document.getElementById("Hauptseite_AnzahlSichtungenGesamt")
     var Hauptseite_AnzahlSichtungenGesamt_Ladezeichen = document.getElementById("Hauptseite_AnzahlSichtungenGesamt_Ladezeichen")
-    // var Lokfinder = document.getElementById("Lokfinder");
+    var Lokfinder = document.getElementById("Lokfinder");
     var PruefzifferBerechnen = document.getElementById("PruefzifferBerechnen");
     var PruefzifferBerechnen_PruefzifferDIV = document.getElementById("PruefzifferBerechnen_PruefzifferDIV");
     var PruefzifferBerechnen_ElfstelligeNummer = document.getElementById("PruefzifferBerechnen_ElfstelligeNummer");
@@ -392,7 +728,7 @@
         AuflistungLoknummern.style.display = "none";
         AnmeldungFehlgeschlagen.style.display = "none";
         AbschlussHinzufuegenSeite.style.display = "none";
-        // Lokfinder.style.display = "none";
+        Lokfinder.style.display = "none";
         PruefzifferBerechnen.style.display = "none";
     }
 
@@ -417,6 +753,15 @@
                 var AlleSichtungen = await GetAlleSichtungen();
                 Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "none"
                 Hauptseite_AnzahlSichtungenGesamt.innerHTML = `${AlleSichtungen.length}`;
+            }
+            else if(SeiteName == "Lokfinder")
+            {
+                if(!IstAngemeldet)
+                {
+                    document.getElementById("Lokfinder_ZurueckZumHauptmenueButton").style.display = "none";
+                }
+
+                Lokfinder_GetStandorte();
             }
         })()
     }
@@ -725,7 +1070,6 @@
         return AlleSichtungen;
     }
 
-
     if(cookieExists("Passwort"))
     {
         InitGesichteteLoks(getCookie("Passwort"))
@@ -875,19 +1219,113 @@
 </script>
 
 <!-- Lokfinder -->
-<!-- <script>
-    GetStandort();
-    function GetStandort(SearchString)
+<script>    
+    function Lokfinder_GetStandorte(SearchString)
     {
-        fetch('https://konzern-apps.web.oebb.at/lok/index/1216.0229')
-        .then(response => response.json())
-        .then(data => {
-            // You can now access the data from the JSON object
-            console.log(data);
-        })
-        .catch(error => {
-            // There was an error making the request
-            console.error(error);
-        });
+        
+        Lokfinder_UpdateLabelFuerLok("1216.0229");
+        Lokfinder_UpdateLabelFuerLok("8090.0744");
+        Lokfinder_UpdateLabelFuerLok("4124.0014");
+        Lokfinder_UpdateLabelFuerLok("4124.0013");
+        Lokfinder_UpdateLabelFuerLok("4024.0130");
+        Lokfinder_UpdateLabelFuerLok("4024.0123");
+        Lokfinder_UpdateLabelFuerLok("4024.0120");
+        Lokfinder_UpdateLabelFuerLok("4024.0118");
+        Lokfinder_UpdateLabelFuerLok("4024.0103");
+        Lokfinder_UpdateLabelFuerLok("4024.0089");
+        Lokfinder_UpdateLabelFuerLok("4024.0088");
+        Lokfinder_UpdateLabelFuerLok("4024.0085");
+        Lokfinder_UpdateLabelFuerLok("4024.0016");
+        Lokfinder_UpdateLabelFuerLok("4024.0015");
+        Lokfinder_UpdateLabelFuerLok("4024.0014");
+        Lokfinder_UpdateLabelFuerLok("1293.0200");
+        Lokfinder_UpdateLabelFuerLok("1293.0018");
+        Lokfinder_UpdateLabelFuerLok("1216.0210");
+        Lokfinder_UpdateLabelFuerLok("1216.0022");
+        Lokfinder_UpdateLabelFuerLok("1216.0019");
+        Lokfinder_UpdateLabelFuerLok("1216.0012");
+        Lokfinder_UpdateLabelFuerLok("1116.0276");
+        Lokfinder_UpdateLabelFuerLok("1116.0250");
+        Lokfinder_UpdateLabelFuerLok("1116.0249");
+        Lokfinder_UpdateLabelFuerLok("1116.0231");
+        Lokfinder_UpdateLabelFuerLok("1116.0229");
+        Lokfinder_UpdateLabelFuerLok("1116.0222");
+        Lokfinder_UpdateLabelFuerLok("1116.0200");
+        Lokfinder_UpdateLabelFuerLok("1116.0199");
+        Lokfinder_UpdateLabelFuerLok("1116.0195");
+        Lokfinder_UpdateLabelFuerLok("1116.0182");
+        Lokfinder_UpdateLabelFuerLok("1116.0181");
+        Lokfinder_UpdateLabelFuerLok("1116.0165");
+        Lokfinder_UpdateLabelFuerLok("1116.0158");
+        Lokfinder_UpdateLabelFuerLok("1116.0157");
+        Lokfinder_UpdateLabelFuerLok("1116.0153");
+        Lokfinder_UpdateLabelFuerLok("1116.0143");
+        Lokfinder_UpdateLabelFuerLok("1116.0077");
+        Lokfinder_UpdateLabelFuerLok("1116.0016");
+        Lokfinder_UpdateLabelFuerLok("1063.0039");
+        Lokfinder_UpdateLabelFuerLok("1016.0023");
+        Lokfinder_UpdateLabelFuerLok("1016.0021");
+        Lokfinder_UpdateLabelFuerLok("1016.0020");
     }
-</script> -->
+
+    function Lokfinder_UpdateLabelFuerLok(Lok)
+    {
+        if(Lok != "")
+        {
+            fetch(`https://konzern-apps.web.oebb.at/lok/index/${Lok}`)
+            .then(response => response.json())
+            .then(data => {
+
+                try
+                {
+                    var Ankunft = data[data.length - 1].arrival;
+                    if(Ankunft == null)
+                    {
+                        Ankunft = "unbekannt";
+                    }
+                    else
+                    {
+                        Ankunft = formatiereZeitInWien(Ankunft);
+                    }
+
+                    var Abfahrt = data[data.length - 1].departure;
+                    if(Abfahrt == null)
+                    {
+                        Abfahrt = "unbekannt";
+                    }
+                    else
+                    {
+                        Abfahrt = formatiereZeitInWien(Abfahrt);
+                    }
+
+                    document.getElementById(`Standort_${Lok}`).innerHTML = `Nächster Halt in:<br><strong>${data[data.length - 1].name}</strong><br><br>Ankunft: <strong>${Ankunft}</strong><br>Abfahrt: <strong>${Abfahrt}</strong><br>`;
+                }
+                catch (error)
+                {
+                    document.getElementById(`Standort_${Lok}`).innerHTML = `Aktuell leider keine Daten`;
+                }
+                
+                
+            })
+            .catch(error => { document.getElementById(`Standort_${Lok}`).innerHTML = `Aktuell leider keine Daten`; });
+        }        
+    }
+
+    function formatiereZeitInWien(zeitstempel)
+    {
+        const datum = new Date(zeitstempel);
+
+        const formatter = new Intl.DateTimeFormat('de-AT', {
+            timeZone: 'Europe/Vienna',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+
+        const formatierteZeit = formatter.format(datum);
+        return formatierteZeit;
+    }
+</script>
