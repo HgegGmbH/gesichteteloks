@@ -16,6 +16,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <style>
+        hr
+        {
+            background-color: rgb(230, 230, 230);
+        }
+
+        .card
+        {
+            color: rgb(41, 41, 41);
+        }
+    </style>
+
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%C3%96BB_Logo_Pflatsch_neu.svg/452px-%C3%96BB_Logo_Pflatsch_neu.svg.png" type="image/x-icon">
     <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%C3%96BB_Logo_Pflatsch_neu.svg/452px-%C3%96BB_Logo_Pflatsch_neu.svg.png" type="image/x-icon">
 
@@ -53,14 +65,14 @@
                 dataRef = database.ref();
 
                 IstAngemeldet = true;
-                setCookie("Passwort", PasswortBenutzereingabe)
+                setCookie("PasswortGesichteteLoks", PasswortBenutzereingabe)
                 Event_AnmeldungAbgeschlossen();
             })
             .catch((error) => 
             {
                 //alert(error)
                 IstAngemeldet = false;
-                deleteCookie("Passwort");
+                deleteCookie("PasswortGesichteteLoks");
                 SeiteWechseln("AnmeldungFehlgeschlagen")
             });
         }
@@ -171,7 +183,7 @@
         }
     </script>
 </head>
-<body class="text-center">    
+<body class="text-center" style="color: rgb(230,230,230); background-color: rgb(41, 41, 41);">    
     <div class="container mt-5" id="AnmeldungFenster" style="display: none;"> 
         <strong style="font-size: 20pt;">Gesichtete Loks Online</strong><br><br>
         <strong style="font-size: 25pt;">Authentifizierung</strong><br><br>
@@ -190,29 +202,33 @@
 
     <div class="container mt-5" id="Hauptseite" style="display: none;">          
         <div>
-            <br><h1 class="display-4">Gesichtete Loks der Konzerne</h1><br>
-            <img style="width:50%" src="https://i.imgur.com/8QUYvH7_d.webp?maxwidth=760&fidelity=grand" alt="..." class="">
+            <br><h1 class="display-4">GESICHTETE LOKS</h1><br>
+            <img style="width: 100px" src="https://i.imgur.com/AclnzU4.png" alt="..." class=""><!-- <img style="width:50%" src="https://i.imgur.com/8QUYvH7_d.webp?maxwidth=760&fidelity=grand" alt="..." class=""> -->
             <br><br>
             <hr><br>
-            <h5 class="display-4">Fahrzeug hinzufügen</h5><br>
-            <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">FAHRZEUG HINZUFÜGEN</button><br><br>
+            <h5 class="display-4">FAHRZEUG HINZUFÜGEN</h5><br>
+            <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">FAHRZEUG HINZUFÜGEN</button><br><br>            
             <button onclick="SeiteWechseln('PruefzifferBerechnen')" type="button" class="btn btn-secondary">PRUEFZIFFER BERECHNEN</button><br><br>
             <button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary">ETR 170 SUCHE</button><br><br>
-            <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info">LOKFINDER</button><br><br>
+            <button onclick="SeiteWechseln('SchonGesehen')" type="button" class="btn btn-info">SCHON GSEGN</button><br><br>
+            <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info">LOKFINDER</button><br><br>            
             <hr><br>
  
-            <h5 class="display-4">Loks</h5><br>
+            <h5 class="display-4">LOKS</h5><br>
             <button onclick="AuflistungLoknummernStarten('1144', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1144</button><br><br>
             <button onclick="AuflistungLoknummernStarten('1016', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1016</button><br><br>
             <button onclick="AuflistungLoknummernStarten('1116', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1116</button><br><br>
             <button onclick="AuflistungLoknummernStarten('1216', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1216</button><br><br>
-            <button onclick="AuflistungLoknummernStarten('1293', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1293</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1293', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1293</button><br><br>            
+            <button onclick="AuflistungLoknummernStarten('1142', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1142</button><br><br>
+            <br>
+            DIESEL<br><br>
             <button onclick="AuflistungLoknummernStarten('2016', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2016</button><br><br>
             <hr><br>
     
-            <h5 class="display-4">Triebwagen</h5><br>
-            <button onclick="AuflistungLoknummernStarten('8073', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8073</button><br><br>
-            <button onclick="AuflistungLoknummernStarten('8090', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8090</button><br><br>
+            <h5 class="display-4">TRIEBWAGEN</h5><br>
+            <button onclick="AuflistungLoknummernStarten('4020', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4020</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4023', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4023</button><br><br>
             <button onclick="AuflistungLoknummernStarten('4024', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4024</button><br><br>
             <button onclick="AuflistungLoknummernStarten('4124', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4124</button><br><br>
             <button onclick="AuflistungLoknummernStarten('4744', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4744</button><br><br>
@@ -221,15 +237,26 @@
             <button onclick="AuflistungLoknummernStarten('SETR170', '')" type="button" class="btn btn-danger">I-SAD ETR 170</button><br><br>
             <button onclick="AuflistungLoknummernStarten('TETR170', '')" type="button" class="btn btn-danger">I-TI ETR 170</button><br><br>
             <hr><br>
+
+            <h5 class="display-4">STEUERWAGEN</h5><br>
+            <button onclick="AuflistungLoknummernStarten('8073', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8073</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('8633', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8633</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('8090', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8090</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('8091', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8091</button><br><br>
+            <hr><br>
     
-            <h5 class="display-4">Verschub</h5><br>
+            <h5 class="display-4">VERSCHUB</h5><br>
+            ELEKTRO<br><br>
             <button onclick="AuflistungLoknummernStarten('1163', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1163</button><br><br>
             <button onclick="AuflistungLoknummernStarten('1063', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1063</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1064', '9181')" type="button" class="btn btn-danger">A-ÖBB 9281 1064</button><br><br>
+            <br>
+            DIESEL<br><br>
             <button onclick="AuflistungLoknummernStarten('2068', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2068</button><br><br>
-            <button onclick="AuflistungLoknummernStarten('2070', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2070</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('2070', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2070</button><br><br>            
             <hr><br><br>
             <h1 class="display-4" style="font-size:xx-large;">Zusammenfassung</h1>
-            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><div class="spinner-border text-secondary" role="status" id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; text-align: center;"></div><br><strong id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
+            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><div id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; "><br><div class="spinner-border text-secondary" role="status" style="text-align: center;"></div></div><br><strong id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
             <br>
 
             <!-- <button onclick="ManuellHinzufuegen()">ManuellHinzufuegen</button> -->
@@ -248,12 +275,12 @@
     
             <div class="form-group">
                 <input type="text" class="form-control" id="FahrzeugHinzufuegen_Baureihe_TextBox" aria-describedby="" placeholder="1144 oder SETR170 oder TETR170" name="Baureihe" value="">
-                <small id="" class="form-text text-muted text-left">Gib hier die Baureihe des neu gesichteten Fahrzeuges ein</small>
+                <small id="" class="form-text text-muted text-left">Gib hier die Baureihe ein</small>
             </div>
 
             <div class="form-group">
                 <input type="text" class="form-control" id="FahrzeugHinzufuegen_Nummer_TextBox" aria-describedby="" placeholder="125 oder 012 oder 218" name="Nummer" value="">
-                <small id="" class="form-text text-muted text-left">Gib hier die Dreistellige Nummer des neu gesichteten Fahrzeuges ein</small>
+                <small id="" class="form-text text-muted text-left">Gib hier die Dreistellige Nummer ein</small>
             </div>
 
             <br><div class="spinner-border text-secondary" role="status" id="FahrzeugHinzufuegen_Ladezeichen" style="display: none; text-align: center;"></div><br><br>
@@ -297,7 +324,7 @@
         <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button>
         <br><br><br>
         <div style="width:100%; border:hidden" class="text-center">
-            <table class="table">
+            <table class="table" style="color: rgb(230, 230, 230);">
                 <thead>
                     <tr>
                         <th scope="col" id="AuflistungLoknummern_Ueberschrift_Label"></th>
@@ -345,6 +372,19 @@
             <br><br><br><br><br>
         </div>
 
+    </div>
+
+    <div class="container mt-5" id="SchonGesehen" style="display: none;">
+        <h1 class="display-4">Lok schon gesehen?</h1><br><br>
+
+        <div class="form-group">
+            <input type="text" class="form-control" id="SchonGesehenTextBox" aria-describedby="" placeholder="LOK NUMMER" name="Baureihe" value="">
+            <small id="" class="form-text text-muted text-left">Baureihe Leerzeichen Nummer eingeben</small>
+        </div>
+
+        <button onclick="SchonGesehenUeberpruefen(document.getElementById('SchonGesehenTextBox').value)" type="button" class="btn btn-info">Überprüfen</button><button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger ml-2">Zurück zum Hauptmenü</button><br><br>
+        <br><br><br>
+        <div id="SchonGesehenErgebnis"></div>
     </div>
 
     <div class="container mt-5" id="Lokfinder" style="display: none; text-align: center;">     
@@ -456,7 +496,7 @@
         </div><br><br>
 
         <div class="card mx-auto" style="width: 18rem;">
-            <img class="card-img-top" src="https://fotowelten.startbilder.de/1200/4024-015-2-stand-linz-hbf060422-772514.jpg" alt="Card image cap">
+            <img class="card-img-top" src="https://lh6.googleusercontent.com/proxy/A3A1nADrvlTi40aANEs3ycbiUU7d-N2Kt196jfSn3W5R7_PAHGSVq-5vt4KI5J-pF0XsVfc1CdOW23ogcXtgLnz0jdxNxHJkjcnLhU0Qsw" alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title"><strong>A-ÖBB 9481 4024 015-1</strong></h5>
                 <p class="card-text" id="Standort_4024.0015"></p>
@@ -730,6 +770,7 @@
         AbschlussHinzufuegenSeite.style.display = "none";
         Lokfinder.style.display = "none";
         PruefzifferBerechnen.style.display = "none";
+        SchonGesehen.style.display = "none"
     }
 
     function SeiteWechseln(SeiteName)
@@ -762,6 +803,11 @@
                 }
 
                 Lokfinder_GetStandorte();
+            }
+            else if(SeiteName == "SchonGesehen")
+            {
+                SchonGesehenErgebnis.innerHTML = ""
+                SchonGesehenTextBox.value = ""
             }
         })()
     }
@@ -949,7 +995,7 @@
                 AuflistungLoknummern_Tabelle.innerHTML += 
                 `
                 <tr>
-                <td><img src="${GetImagePath(Baureihe)}" style=" width: 110px" alt="..." class=""> ${AusgabeArray[Eintrag]}</td>
+                <td><img src="${GetImagePath(Baureihe)}" style=" width: 110px" alt="..." class="">&nbsp;&nbsp;&nbsp;${AusgabeArray[Eintrag]}</td>
                 </tr>`
 
                 
@@ -1030,22 +1076,32 @@
 
     function GetImagePath(Baureihe)
     {
-        if(Baureihe == "1144") { return "https://i.imgur.com/zJQZUUJ_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "1016" || Baureihe == "1116") { return "https://i.imgur.com/9s7W6Ya_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "1216") { return "https://i.imgur.com/2sJUog8_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "1293") { return "https://i.imgur.com/KaVi1wh_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "2016") { return "https://i.imgur.com/y5QyrQY_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "1144") { return "https://i.imgur.com/1gejanX.png" }
+        if(Baureihe == "1016"
+        || Baureihe == "1116") { return "https://i.imgur.com/OlOBX0t.png" }
+        if(Baureihe == "1216") { return "https://i.imgur.com/GaA6DBK.png" }
+        if(Baureihe == "1293") { return "https://i.imgur.com/w2C4cDL.png" }
+        if(Baureihe == "2016") { return "https://i.imgur.com/7nKbKLZ.png" }
+        if(Baureihe == "8073") { return "https://i.imgur.com/1JCxN9o.png" }
+        if(Baureihe == "8633") { return "https://i.imgur.com/GXr14rU.png" }
+        if(Baureihe == "8090") { return "https://i.imgur.com/oHH4vA3.png" }
+        if(Baureihe == "8091") { return "https://i.imgur.com/zIRoAZl.png" }
+        if(Baureihe == "4020") { return "https://i.imgur.com/Eb0D9Vo.png" }
+        if(Baureihe == "1142") { return "https://i.imgur.com/zjapkMw.png" }
+        if(Baureihe == "4023"
+        || Baureihe == "4024"
+        || Baureihe == "4124") { return "https://i.imgur.com/vSAGeLE.png" }
+        if(Baureihe == "4744"
+        || Baureihe == "4746") { return "https://i.imgur.com/KLN2Fy1.png" }
+        if(Baureihe == "4748") { return "https://i.imgur.com/5wOCqr9.png" }
+        if(Baureihe == "SETR170"
+        || Baureihe == "TETR170") { return "https://i.imgur.com/860rbBr.png" }
 
-        if(Baureihe == "8073") { return "" }
-        if(Baureihe == "8090") { return "https://i.imgur.com/mtzPcSO_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "4024" || Baureihe == "4124") { return "https://i.imgur.com/hMzUNJj_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "4744" || Baureihe == "4746" ||Baureihe == "4748") { return "https://i.imgur.com/UEUApjB_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "SETR170" || Baureihe == "TETR170") { return "https://i.imgur.com/SfdxrJC_d.webp?maxwidth=760&fidelity=grand" }
-
-        if(Baureihe == "1163") { return "https://i.imgur.com/fG6XoXc_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "1063") { return "https://i.imgur.com/ZTTGVC6_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "2068") { return "https://i.imgur.com/hK37hfU_d.webp?maxwidth=760&fidelity=grand" }
-        if(Baureihe == "2070") { return "https://i.imgur.com/nuUqXQl_d.webp?maxwidth=760&fidelity=grand" }
+        if(Baureihe == "1163") { return "https://i.imgur.com/xIYZH7H.png" }
+        if(Baureihe == "1063") { return "https://i.imgur.com/k96vxKr.png" }
+        if(Baureihe == "1064") { return "https://i.imgur.com/W1CllSI.png" }
+        if(Baureihe == "2068") { return "https://i.imgur.com/lbjWGHx.png" }
+        if(Baureihe == "2070") { return "https://i.imgur.com/G4azcze.png" }
     }
 
     async function GetAlleSichtungen()
@@ -1070,9 +1126,9 @@
         return AlleSichtungen;
     }
 
-    if(cookieExists("Passwort"))
+    if(cookieExists("PasswortGesichteteLoks"))
     {
-        InitGesichteteLoks(getCookie("Passwort"))
+        InitGesichteteLoks(getCookie("PasswortGesichteteLoks"))
     }
     else
     {
@@ -1089,6 +1145,8 @@
 
         SeiteWechseln('FahrzeugHinzufuegen');
     }
+
+
 
     function FahrzeugHinzufuegenFunktion(Baureihe, Nummer)
     {
@@ -1111,7 +1169,13 @@
             Baureihe == "1163" ||
             Baureihe == "1063" ||
             Baureihe == "2068" ||
-            Baureihe == "2070"         
+            Baureihe == "2070" ||
+            Baureihe == "1142" ||
+            Baureihe == "1064" ||
+            Baureihe == "4020" ||
+            Baureihe == "4023" ||
+            Baureihe == "8633" ||
+            Baureihe == "8091"         
         )
         {
             if(Nummer.length == 3)
@@ -1327,5 +1391,67 @@
 
         const formatierteZeit = formatter.format(datum);
         return formatierteZeit;
+    }
+</script>
+
+<!-- Lok schon gesehen? -->
+<script>
+    function SchonGesehenUeberpruefen(Eingabe)
+    {
+        (async () =>
+        {                 
+            if(Eingabe.includes(" "))
+            {
+                var Lok = parseInt(Eingabe.split(" ")[0])
+                var Nummer = parseInt(Eingabe.split(" ")[1])
+
+                if(Number.isInteger(Lok))
+                {
+                    if(Eingabe.split(" ")[0].length == 4)
+                    {
+                        if(Number.isInteger(Nummer))
+                        {
+                            if(Eingabe.split(" ")[1].length == 3)
+                            {
+
+                                var Gesehen = await GetVariable(`Sichtungen/${Eingabe.split(" ")[0]}/${Eingabe.split(" ")[1]}`) == `${Eingabe.split(" ")[1]}`
+                                var GesehenString = Gesehen ? "JA" : "NEIN"
+                                
+
+                                SchonGesehenErgebnis.innerHTML = `
+                                <img style="width: 200px" src="${GetImagePath(Lok)}"><br><br>
+                                <strong><h2 style="font-family: 'Courier New', Courier, monospace;">${Eingabe.split(" ")[0]} ${Eingabe.split(" ")[1]}</h2><br></strong>
+                                <h1 style="color: ${Gesehen ? "rgb(60,179,113)" : "rgb(204, 76, 76)"}">${Gesehen ? `<img src="https://i.imgur.com/X94IPqU.png" class="mr-2" height="32px" alt="">` : `<img src="https://i.imgur.com/Rj1vuiK.png" class="mr-2" height="32px" alt="">`}${GesehenString}</h1> `
+                            }
+                            else
+                            {
+                                FehlerhafteEingabeSchonGesehenAnzeigen()
+                            }                       
+                        }
+                        else
+                        {
+                            FehlerhafteEingabeSchonGesehenAnzeigen()
+                        }
+                    }
+                    else
+                    {
+                        FehlerhafteEingabeSchonGesehenAnzeigen()
+                    } //<h1>${await GetVariable(`Sichtungen/${parseInt(Eingabe.split(" ")[0])}/${parseInt(Eingabe.split(" ")[1])}`) == `${parseInt(Eingabe.split(" ")[1])}` ? "JA" : "NEIN"}</h1> `
+                }
+                else
+                {
+                    FehlerhafteEingabeSchonGesehenAnzeigen()
+                }
+            }
+            else
+            {
+                FehlerhafteEingabeSchonGesehenAnzeigen()
+            }
+        })()
+    }
+
+    function FehlerhafteEingabeSchonGesehenAnzeigen()
+    {
+        SchonGesehenErgebnis.innerHTML = "Fehlerhafte Eingabe"
     }
 </script>
