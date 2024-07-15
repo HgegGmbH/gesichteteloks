@@ -32,6 +32,8 @@
     <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%C3%96BB_Logo_Pflatsch_neu.svg/452px-%C3%96BB_Logo_Pflatsch_neu.svg.png" type="image/x-icon">
 
     <script>
+        function e(id) {return document.getElementById(id)}
+
         var DatabaseURL = "https://gesichteteloks-901b4-default-rtdb.firebaseio.com/";
 
         const firebaseApp = firebase.initializeApp(
@@ -208,10 +210,14 @@
             <hr><br>
             <h5 class="display-4">FAHRZEUG HINZUFÜGEN</h5><br>
             <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">FAHRZEUG HINZUFÜGEN</button><br><br>            
-            <button onclick="SeiteWechseln('PruefzifferBerechnen')" type="button" class="btn btn-secondary">PRUEFZIFFER BERECHNEN</button><br><br>
-            <button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary">ETR 170 SUCHE</button><br><br>
-            <button onclick="SeiteWechseln('SchonGesehen')" type="button" class="btn btn-info">SCHON GSEGN</button><br><br>
-            <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info">LOKFINDER</button><br><br>            
+            <button onclick="SeiteWechseln('PruefzifferBerechnen')" type="button" class="btn btn-secondary">PRUEFZIFFER</button><button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary ml-2">ETR170 SUCHE</button><br><br>
+            
+            <button onclick="SeiteWechseln('SchonGesehen')" type="button" class="btn btn-info">BEREITS GESEHEN</button><button onclick="SeiteWechseln('Güterzug_Seite'); GZ_DatumAufHeutigesDatumStellen(); " type="button" class="btn btn-success ml-2">GÜTERZUG</button><br><br>    
+            
+            <div style="display: none;">
+                <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info ml-2">LOKFINDER</button><br><br> 
+            </div>
+                
             <hr><br>
  
             <h5 class="display-4">LOKS</h5><br>
@@ -736,10 +742,184 @@
         </div><br><br>
     </div>
 
+    <div class="container mt-5 ml-3" id="Güterzug_Seite" style="display: none; text-align: left; width: 90%;">
+        <strong style="font-size: xx-large;">GÜTERZUG</strong><br><br>
+
+        <strong>Datum</strong><br>
+        <input type="date" style="width: 150px;" onchange="GZ_SeiteReset()" class="form-control" id="GZ_Datum" min="2024-01-01" placeholder=""><br>
+
+        <strong class="mt-3">Ankunftszeit in Sillian</strong><br>
+        <button onclick="GZ_ZeitAuswaehlen('GZ_Zeit_1148')" type="button" id="GZ_Zeit_1148" class="btn btn-outline-primary">11:48</button>
+        <button onclick="GZ_ZeitAuswaehlen('GZ_Zeit_1248')" type="button" id="GZ_Zeit_1248" class="btn btn-outline-primary ml-2">12:48</button>
+        <button onclick="GZ_ZeitAuswaehlen('GZ_Zeit_1348')" type="button" id="GZ_Zeit_1348" class="btn btn-outline-primary ml-2">13:48</button>
+        <button onclick="GZ_ZeitAuswaehlen('GZ_Zeit_0000')" type="button" id="GZ_Zeit_0000" class="btn btn-outline-primary ml-2">Sonstiges</button>
+        <br><br>
+
+        <div id="GZ_TFZe" style="display: none;">
+            <strong>Triebfahrzeuge</strong><br><br>
+
+            <div class="card" style="width: 18rem; background-color: rgb(37, 37, 37); color: rgb(230, 230, 230); border-color: rgb(105, 105, 105);">
+                <img class="card-img-top" id="GZ_Lok1_Bild" src="https://i.imgur.com/J31o7m3.png" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">TFZ1: <span id="GZ_Lok1">Keine Lok</span></h5>
+                    <a href="#" onclick="LokFestlegen(1, prompt('Baureihe eingeben:'), prompt('3-stellige Loknummer eingeben:'))" class="btn btn-primary">Lok auswählen</a>
+                </div>
+            </div>
+    
+            <br><br>
+    
+            <div class="card" style="width: 18rem; background-color: rgb(37, 37, 37); color: rgb(230, 230, 230); border-color: rgb(105, 105, 105);">
+                <img class="card-img-top" id="GZ_Lok2_Bild" src="https://i.imgur.com/J31o7m3.png" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">TFZ2: <span id="GZ_Lok2">Keine Lok</span></h5>
+                    <a href="#" onclick="LokFestlegen(2, prompt('Baureihe eingeben:'), prompt('3-stellige Loknummer eingeben:'))" class="btn btn-primary">Lok auswählen</a>
+                </div>
+            </div>
+        </div>
+        
+        <br><br>
+        <button onclick="GZ_Speichern()" type="button" class="btn btn-success">Speichern</button><button onclick="GZ_SeiteReset(); SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger ml-2">Zurück zum Hauptmenü</button><br><br>
+        <br><br><br><br><br>
+    </div>
+    
     <br><br><br><br>
 </body>
 </html>
 
+
+<!-- Güterzug Seite -->
+<script>
+    var currentDate = new Date()
+
+    function GZ_DatumAufHeutigesDatumStellen()
+    {
+        document.getElementById('GZ_Datum').value = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+    }    
+
+    GZ_DatumAufHeutigesDatumStellen()
+
+    var URL_KeinBild = "https://i.imgur.com/J31o7m3.png"
+    var GZ_AusgewaehlteZeit = ""
+
+    var GZ_Baureihe1 = ""
+    var GZ_Baureihe2 = ""
+    var GZ_Nummer1 = ""
+    var GZ_Nummer2 = ""
+
+
+    function GZ_ZeitAuswaehlen(ZeitString)
+    {
+        GZ_ZeitAbwaehlen("GZ_Zeit_1148"); GZ_ZeitAbwaehlen("GZ_Zeit_1248"); GZ_ZeitAbwaehlen("GZ_Zeit_1348"); GZ_ZeitAbwaehlen("GZ_Zeit_0000")
+
+        if(e(ZeitString) != undefined)
+        {
+            GZ_SeiteReset()
+            e(ZeitString).classList.add("btn-primary")
+            e(ZeitString).classList.remove("btn-outline-primary")
+            GZ_AusgewaehlteZeit = ZeitString
+            e("GZ_TFZe").style.display = "block"
+            GZ_Load()
+        }
+        else
+        {
+            GZ_AusgewaehlteZeit = ""
+        }
+    }
+
+    function GZ_ZeitAbwaehlen(ZeitString)
+    {
+        e(ZeitString).classList.remove("btn-primary")
+        e(ZeitString).classList.add("btn-outline-primary")
+        e("GZ_TFZe").style.display = "none"        
+    }
+
+    function LokFestlegen(Lok_1_oder_2, Baureihe, Nummer, FunktionAusgeloestDurchGZLoad)
+    {
+        if(Baureihe.length == 4 && Nummer.length == 3)
+        {
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).src = GetImagePath(Baureihe)
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.width = "90%"
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.marginTop = "5%"
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.marginBottom = "5%"
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.marginLeft = "5%"
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.marginRight = "5%"
+            
+            e(`GZ_Lok${Lok_1_oder_2}`).innerHTML = `${Baureihe} ${Nummer}`
+
+            if(Lok_1_oder_2 == 1)
+            {
+                GZ_Baureihe1 = Baureihe
+                GZ_Nummer1 = Nummer
+            }
+            else
+            {
+                GZ_Baureihe2 = Baureihe
+                GZ_Nummer2 = Nummer
+            }
+        }
+        else
+        {
+            if(FunktionAusgeloestDurchGZLoad != true)
+            {
+                alert("Fehlerhafte Eingabe!")
+            }            
+        }
+    }
+
+    function GZ_Speichern()
+    {
+        (async () =>
+        {                 
+            if(GZ_AusgewaehlteZeit != "" && GZ_Datum != null && GZ_Datum != undefined && GZ_Datum != "")
+            {
+                var GZ_Datum_String = e("GZ_Datum").value.toString();
+                await SetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok1/Baureihe`, GZ_Baureihe1)
+                await SetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok1/Nummer`, GZ_Nummer1)
+                await SetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok2/Baureihe`, GZ_Baureihe2)
+                await SetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok2/Nummer`, GZ_Nummer2)
+
+                GZ_SeiteReset(); SeiteWechseln('Hauptseite')
+            }
+            else
+            {
+                alert("Fehlerhafte Eingabe!")
+            }
+        })()
+    }
+
+    function GZ_Load()
+    {
+        (async () =>
+        {                 
+            if(GZ_AusgewaehlteZeit != "" && GZ_Datum != null && GZ_Datum != undefined && GZ_Datum != "")
+            {
+                var GZ_Datum_String = e("GZ_Datum").value.toString();
+
+                LokFestlegen(1, await GetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok1/Baureihe`), await GetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok1/Nummer`), true)
+                LokFestlegen(2, await GetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok2/Baureihe`), await GetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok2/Nummer`), true)            
+            }
+        })()
+    }
+
+    function GZ_SeiteReset()
+    {        
+        for (let i = 1; i <= 2; i++)
+        {
+            e(`GZ_Lok${i}_Bild`).src = URL_KeinBild
+            e(`GZ_Lok${i}_Bild`).style.width = "100%"
+            e(`GZ_Lok${i}_Bild`).style.marginTop = "0%"
+            e(`GZ_Lok${i}_Bild`).style.marginBottom = "0%"
+            e(`GZ_Lok${i}_Bild`).style.marginLeft = "0%"
+            e(`GZ_Lok${i}_Bild`).style.marginRight = "0%"
+
+            e(`GZ_Lok${i}`).innerHTML = `Keine Lok`
+
+            GZ_ZeitAuswaehlen("Zeit zurucksetzen")
+            
+            GZ_Baureihe1 = GZ_Baureihe2 = GZ_Nummer1 = GZ_Nummer2 = GZ_AusgewaehlteZeit = ""
+        }
+    }
+</script>
 
 <!-- Seiten Switcher -->
 <script>
@@ -758,6 +938,7 @@
     var PruefzifferBerechnen_ElfstelligeNummer = document.getElementById("PruefzifferBerechnen_ElfstelligeNummer");
     var ETR170Suche_GesichtetStatus_Ladezeichen = document.getElementById("ETR170Suche_GesichtetStatus_Ladezeichen");
     var ETR170Suche_GesichtetStatus_Label = document.getElementById("ETR170Suche_GesichtetStatus_Label");
+    var Güterzug_Seite = document.getElementById("Güterzug_Seite")
 
     function AlleSeitenAusblenden()
     {
@@ -771,6 +952,7 @@
         Lokfinder.style.display = "none";
         PruefzifferBerechnen.style.display = "none";
         SchonGesehen.style.display = "none"
+        Güterzug_Seite.style.display = "none"
     }
 
     function SeiteWechseln(SeiteName)
