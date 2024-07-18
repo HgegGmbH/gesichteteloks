@@ -1172,15 +1172,40 @@
             document.getElementById("AuflistungLoknummern_Ueberschrift_Label").innerHTML = `${Konzern} ${Vorderteil} ${Baureihe}<br>Bereits gesichtet: ${AusgabeArray.length}`;
             document.getElementById("AuflistungLoknummern_Tabelle").innerHTML = "";
             
+            
+
             for(Eintrag in AusgabeArray)
             {
+                var BaureiheBildVerw = Baureihe
+                var AusgabeVerw = AusgabeArray[Eintrag]
+
+                if(AusgabeArray[Eintrag].includes("9181 1144 001"))
+                {
+                    BaureiheBildVerw = "1044501"
+                    AusgabeVerw = "A-ÖBB 9181 1044 501-3"
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 092") || AusgabeArray[Eintrag].includes("9181 1144 117"))
+                {
+                    BaureiheBildVerw = "1144SB"
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 040"))
+                {
+                    BaureiheBildVerw = "1144040"
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 283"))
+                {
+                    BaureiheBildVerw = "1144283"
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 017"))
+                {
+                    BaureiheBildVerw = "1144017"
+                }
+
                 AuflistungLoknummern_Tabelle.innerHTML += 
                 `
                 <tr>
-                <td><img src="${GetImagePath(Baureihe)}" style=" width: 110px" alt="..." class="">&nbsp;&nbsp;&nbsp;${AusgabeArray[Eintrag]}</td>
+                <td><img src="${GetImagePath(BaureiheBildVerw)}" style=" width: 110px" alt="..." class="">&nbsp;&nbsp;&nbsp;${AusgabeVerw}</td>
                 </tr>`
-
-                
             }
         })()
     }
@@ -1258,6 +1283,12 @@
 
     function GetImagePath(Baureihe)
     {
+        if(Baureihe == "1044501") {return "https://i.imgur.com/9AZiCoi.png"}
+        if(Baureihe == "1144SB") {return "https://i.imgur.com/9jTDWhW.png"}
+        if(Baureihe == "1144040") { return "https://i.imgur.com/7pDPzO0.png"}
+        if(Baureihe == "1144283") {return "https://i.imgur.com/Ze1u1iZ.png"}
+        if(Baureihe == "1144017") {return "https://i.imgur.com/hiV55IO.png"}
+
         if(Baureihe == "1144") { return "https://i.imgur.com/1gejanX.png" }
         if(Baureihe == "1016"
         || Baureihe == "1116") { return "https://i.imgur.com/OlOBX0t.png" }
