@@ -26,6 +26,23 @@
         {
             color: rgb(41, 41, 41);
         }
+
+        
+        .AuslistungLokPruefziffer {
+            display: inline-block;
+            vertical-align: top;
+            border: 1px solid rgb(207, 207, 207);
+            border-radius: 5px;
+            width: 300px;
+            height: 150px;
+            padding: 10px;
+            margin-right: 5px;
+            margin-left: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            background-color: rgb(65, 65, 65);
+        }
+    
     </style>
 
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%C3%96BB_Logo_Pflatsch_neu.svg/452px-%C3%96BB_Logo_Pflatsch_neu.svg.png" type="image/x-icon">
@@ -210,7 +227,7 @@
             <hr><br>
             <h5 class="display-4">FAHRZEUG HINZUFÜGEN</h5><br>
             <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">FAHRZEUG HINZUFÜGEN</button><br><br>            
-            <button onclick="SeiteWechseln('PruefzifferBerechnen')" type="button" class="btn btn-secondary">PRUEFZIFFER</button><button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary ml-2">ETR170 SUCHE</button><br><br>
+            <button onclick="SeiteWechseln('PruefzifferBerechnen')" type="button" class="btn btn-secondary">PRÜFZIFFER</button><button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary ml-2">ETR170 SUCHE</button><br><br>
             
             <button onclick="SeiteWechseln('SchonGesehen')" type="button" class="btn btn-info">BEREITS GESEHEN</button><button onclick="SeiteWechseln('Güterzug_Seite'); GZ_DatumAufHeutigesDatumStellen(); " type="button" class="btn btn-success ml-2">GÜTERZUG</button><br><br>    
             
@@ -241,7 +258,7 @@
             <button onclick="AuflistungLoknummernStarten('4746', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4746</button><br><br>
             <button onclick="AuflistungLoknummernStarten('4748', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4748</button><br><br>
             <button onclick="AuflistungLoknummernStarten('SETR170', '')" type="button" class="btn btn-danger">I-SAD ETR 170</button><br><br>
-            <button onclick="AuflistungLoknummernStarten('TETR170', '')" type="button" class="btn btn-danger">I-TI ETR 170</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('TETR170', '')" type="button" class="btn btn-danger">I-TI ETR 170</button><br><br>            
             <hr><br>
 
             <h5 class="display-4">STEUERWAGEN</h5><br>
@@ -255,14 +272,14 @@
             ELEKTRO<br><br>
             <button onclick="AuflistungLoknummernStarten('1163', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1163</button><br><br>
             <button onclick="AuflistungLoknummernStarten('1063', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1063</button><br><br>
-            <button onclick="AuflistungLoknummernStarten('1064', '9181')" type="button" class="btn btn-danger">A-ÖBB 9281 1064</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1064', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1064</button><br><br>
             <br>
             DIESEL<br><br>
             <button onclick="AuflistungLoknummernStarten('2068', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2068</button><br><br>
             <button onclick="AuflistungLoknummernStarten('2070', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2070</button><br><br>            
             <hr><br><br>
             <h1 class="display-4" style="font-size:xx-large;">Zusammenfassung</h1>
-            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><div id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; "><br><div class="spinner-border text-secondary" role="status" style="text-align: center;"></div></div><br><strong id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
+            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><br><button type="button" onclick="AnzahlSichtungenGesamtAktualisieren()" class="btn btn-light">Aktualisieren</button><br><div id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; "><br><div class="spinner-border text-secondary" role="status" style="text-align: center;"></div></div><br><strong style="color: mediumseagreen; font-size: xx-large;" id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
             <br>
 
             <!-- <button onclick="ManuellHinzufuegen()">ManuellHinzufuegen</button> -->
@@ -365,15 +382,23 @@
             <input type="text" oninput="PruefzifferBerechnen_ElfstelligeNummer_TextChanged()" class="form-control" id="PruefzifferBerechnen_ElfstelligeNummer" aria-describedby="" placeholder="z.B: 91811144012" name="" value="">
             <small id="" class="form-text text-muted text-left">Gib hier die 11 - stellige Nummer des Fahrzeuges ein.</small>
             <br><br>
-            <div><strong>Information Vorterteil:</strong><br>
+            <div>
+                <strong>Information Vorterteil:</strong><br>
                 Bei Elektroloks: 9181<br>
                 Bei Dieselloks: 9281<br>
                 Bei Steuerwägen: 5081<br>
                 Bei Triebwägen: 9481<br>
                 Bei ETR170: 9483
-                </div>
+            </div>
             <br><br>
-            <div style="font-size: xx-large; display: none;" id="PruefzifferBerechnen_PruefzifferDIV">Prüfziffer: <strong id="PruefzifferBerechnen_PruefzifferLabel">0</strong></div><br><br>
+            <div style="font-size: xx-large; display: none; color: mediumseagreen;" id="PruefzifferBerechnen_PruefzifferDIV">Prüfziffer = <strong id="PruefzifferBerechnen_PruefzifferLabel">0</strong></div><br><br>
+            <br>
+
+            <div style="font-size: xx-large;">Hier Lok auswählen:</div><br>
+            <div id="AuslistungenLoksPruefziffer">
+                
+            </div>
+            <br><br>            
             <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button>
             <br><br><br><br><br>
         </div>
@@ -971,11 +996,7 @@
                 ETR170Suche_GesichtetStatus_Ladezeichen.style.display = "none"
                 ETR170Suche_GesichtetStatus_Label.innerHTML = "Keine Daten vorhanden"
 
-                Hauptseite_AnzahlSichtungenGesamt.innerHTML = "";
-                Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "inline-block"
-                var AlleSichtungen = await GetAlleSichtungen();
-                Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "none"
-                Hauptseite_AnzahlSichtungenGesamt.innerHTML = `${AlleSichtungen.length}`;
+                           
             }
             else if(SeiteName == "Lokfinder")
             {
@@ -991,12 +1012,39 @@
                 SchonGesehenErgebnis.innerHTML = ""
                 SchonGesehenTextBox.value = ""
             }
+            else if(SeiteName == "PruefzifferBerechnen")
+            {                
+                var Baureihen = ["1144", "1016", "1116", "1216", "1293", "1142", "2016", "4020", "4023", "4024", "4124", "4744", "4746", "4748", "SETR170", "TETR170", "8073", "8633", "8090", "8091", "1163", "1063", "1064", "2068", "2070"]
+
+                for(Baureihe of Baureihen)
+                {
+                    var AnzeigeTextBox = `${GetVorderteilFuerBaureihe(Baureihe)}${Baureihe}`
+                    e("AuslistungenLoksPruefziffer").innerHTML += `
+                    <div class="AuslistungLokPruefziffer" onclick="e('PruefzifferBerechnen_ElfstelligeNummer').value = ${AnzeigeTextBox}; window.scrollTo(0, 0); e('PruefzifferBerechnen_ElfstelligeNummer').focus()" >
+                        <img style="width:200px; ${Baureihe[0] == "8" || Baureihe == "4020" || (Baureihe[0] == "2" && Baureihe != "2068" && Baureihe != "2070") ? "margin-top:25px" : ""}" src="${GetImagePath(Baureihe)}" alt=""><br><br><strong style="font-size:x-large;">${GetVorderteilFuerBaureihe(Baureihe)} ${Baureihe}</strong>
+                    </div> `
+                }
+                
+                
+            }
         })()
     }
 
     function Event_AnmeldungAbgeschlossen()
     {
         SeiteWechseln("Hauptseite");
+    }
+
+    function AnzahlSichtungenGesamtAktualisieren()
+    {
+        (async () =>
+        {                 
+            Hauptseite_AnzahlSichtungenGesamt.innerHTML = "";
+            Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "inline-block"     
+            var AlleSichtungen = await GetAlleSichtungen();
+            Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "none"
+            Hauptseite_AnzahlSichtungenGesamt.innerHTML = `${AlleSichtungen.length}`;
+        })()
     }
 </script>
 
@@ -1168,9 +1216,38 @@
 
             AusgabeArray.sort();
 
+            var AnzahlSichtungenBaureiheVerw = AusgabeArray.length
+            if(Baureihe == "1144")
+            {
+                AnzahlSichtungenBaureiheVerw --;
+            }
+            else
+            {
+                var AnzahlGesamt = 0
+
+                if(Baureihe == "1016") { AnzahlGesamt = 50 }
+                if(Baureihe == "1116") { AnzahlGesamt = 282 }
+                if(Baureihe == "1216") { AnzahlGesamt = 50 }
+                if(Baureihe == "1293") { AnzahlGesamt = 113 }
+                if(Baureihe == "2016") { AnzahlGesamt = 100 }
+                if(Baureihe == "1163") { AnzahlGesamt = 20 }
+                if(Baureihe == "1063") { AnzahlGesamt = 48 }
+                if(Baureihe == "1064") { AnzahlGesamt = 10 }
+                if(Baureihe == "2070") { AnzahlGesamt = 90 }
+
+                if(AnzahlGesamt > 0)
+                {
+                    var ProzentString = ((AnzahlSichtungenBaureiheVerw / parseFloat(AnzahlGesamt)) * 100).toFixed(0)
+                    AnzahlSichtungenBaureiheVerw = `${AnzahlSichtungenBaureiheVerw} / ${AnzahlGesamt} (${ProzentString}%)<br><br>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: ${ProzentString}%" aria-valuenow="${ProzentString}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>`
+                }
+            }
+
             SeiteWechseln("AuflistungLoknummern")
-            document.getElementById("AuflistungLoknummern_Ueberschrift_Label").innerHTML = `${Konzern} ${Vorderteil} ${Baureihe}<br>Bereits gesichtet: ${AusgabeArray.length}`;
-            document.getElementById("AuflistungLoknummern_Tabelle").innerHTML = "";
+            document.getElementById("AuflistungLoknummern_Ueberschrift_Label").innerHTML = `${Konzern} ${Vorderteil} ${Baureihe}<br>Bereits gesichtet: ${AnzahlSichtungenBaureiheVerw}`
+            document.getElementById("AuflistungLoknummern_Tabelle").innerHTML = ""
             
             
 
@@ -1183,6 +1260,10 @@
                 {
                     BaureiheBildVerw = "1044501"
                     AusgabeVerw = "A-ÖBB 9181 1044 501-3"
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 002"))
+                {
+                    AusgabeVerw = 'Lokkasten ÖBB 1044.02'
                 }
                 else if(AusgabeArray[Eintrag].includes("9181 1144 092") || AusgabeArray[Eintrag].includes("9181 1144 117"))
                 {
@@ -1208,6 +1289,32 @@
                 </tr>`
             }
         })()
+    }
+
+    function GetVorderteilFuerBaureihe(Baureihe)
+    {
+        if(Baureihe[0] == "1")
+        { //Elektroloks
+            return 9181
+        }
+        else if(Baureihe[0] == "2")
+        { //Dieselloks
+            return 9281
+        }
+        else if(Baureihe[0] == "8")
+        { //Steuerwagen
+            return 5081
+        }
+        else if(Baureihe[0] == "4")
+        { //Triebwagen
+            return 9481
+        }
+        else
+        { //ETR 170
+            return 9483
+        }
+        
+        alert()
     }
 
     function OBB_Pruefziffer_Berechnen(elevenDigitNumber)
@@ -1627,14 +1734,19 @@
                             if(Eingabe.split(" ")[1].length == 3)
                             {
 
-                                var Gesehen = await GetVariable(`Sichtungen/${Eingabe.split(" ")[0]}/${Eingabe.split(" ")[1]}`) == `${Eingabe.split(" ")[1]}`
+                                var Baureihe = Eingabe.split(" ")[0]
+                                var Nummer = Eingabe.split(" ")[1]
+
+                                var Gesehen = await GetVariable(`Sichtungen/${Baureihe}/${Nummer}`) == `${Nummer}`
                                 var GesehenString = Gesehen ? "JA" : "NEIN"
+                                
+                                var Vorderteil = GetVorderteilFuerBaureihe(Baureihe)
                                 
 
                                 SchonGesehenErgebnis.innerHTML = `
                                 <img style="width: 200px" src="${GetImagePath(Lok)}"><br><br>
-                                <strong><h2 style="font-family: 'Courier New', Courier, monospace;">${Eingabe.split(" ")[0]} ${Eingabe.split(" ")[1]}</h2><br></strong>
-                                <h1 style="color: ${Gesehen ? "rgb(60,179,113)" : "rgb(204, 76, 76)"}">${Gesehen ? `<img src="https://i.imgur.com/X94IPqU.png" class="mr-2" height="32px" alt="">` : `<img src="https://i.imgur.com/Rj1vuiK.png" class="mr-2" height="32px" alt="">`}${GesehenString}</h1> `
+                                <strong><strong style="font-family: 'Courier New', Courier, monospace; font-size:x-large;">A-ÖBB ${Vorderteil} ${Baureihe} ${Nummer}-${OBB_Pruefziffer_Berechnen(`${Vorderteil}${Baureihe}${Nummer}`)}</strong><br></strong><br>
+                                <h1 style="color: ${Gesehen ? "rgb(60,179,113)" : "rgb(204, 76, 76)"}">${Gesehen ? `<img src="https://i.imgur.com/X94IPqU.png" class="mr-2" height="32px" alt="">` : `<img src="https://i.imgur.com/Rj1vuiK.png" class="mr-2" height="32px" alt="">`} ${GesehenString}</h1> `
                             }
                             else
                             {
