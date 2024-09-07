@@ -216,7 +216,7 @@
         <strong style="font-size: 30pt;">Gesichtete Loks Online</strong><br><br>
         <strong style="font-size: 35pt; color: rgb(204, 21, 21);">Authentifizierung fehlgeschlagen</strong><br><br>
         <strong style="font-size: 20pt">Mögliche Ursachen:<br>- Falsches Passwort<br>- Keine Internetverbindung</strong><br><br>
-        <button type="button" onclick="location.reload()" class="btn btn-warning">Erneut versuchen</button>
+        <button type="button" onclick="location.reload()" class="btn btn-warning">Erneut versuchen</button>        
     </div>
 
     <div class="container mt-5" id="Hauptseite" style="display: none;">          
@@ -1050,39 +1050,39 @@
 
 <!-- ETR 170 Sucher -->
 <script>
+    var ETR170Auflistung = "";
+
+    ETR170Auflistung += "I101.1019.1041.1058.1066.1033.1027;"
+    ETR170Auflistung += "I102.1076.1108.1116.1124.1090.1084;"
+    ETR170Auflistung += "I103.1134.1165.1173.1181.1157.1142;"
+    ETR170Auflistung += "I106.1316.1348.1355.1363.1336.1324;"
+    ETR170Auflistung += "I107.1373.1405.1413.1421.1397.1381;"
+    ETR170Auflistung += "I108.1431.1462.1470.1488.1454.1449;"
+    ETR170Auflistung += "I201.2017.2049.2056.2064.2031.2025;"
+    ETR170Auflistung += "I202.2074.2106.2114.2122.2098.2082;"
+    ETR170Auflistung += "I211.2611.2643.2650.2668.2635.2629;"
+    ETR170Auflistung += "I212.2678.2700.2718.2726.2692.2686;"
+    ETR170Auflistung += "I213.2736.2767.2775.2783.2759.2745;"
+    ETR170Auflistung += "I214.2793.2825.2833.2841.2817.2801;"
+    ETR170Auflistung += "I215.2850.2882.2890.2908.2874.2868;"
+    ETR170Auflistung += "I216.2918.2940.2957.2965.2932.2926;"
+    ETR170Auflistung += "I217.2975.3005.3013.3021.2999.2983;"
+    ETR170Auflistung += "I209.1498.1520.1538.1546.1512.1506;"
+    ETR170Auflistung += "I110.1555.1587.1595.1603.1579.1563;"
+    ETR170Auflistung += "S001.0011.0043.0050.0068.0035.0029;"
+    ETR170Auflistung += "S002.0078.0100.0118.0126.0092.0086;"
+    ETR170Auflistung += "S003.0136.0167.0175.0183.0159.0144;"
+    ETR170Auflistung += "S004.0193.0225.0233.0241.0217.0201;"
+    ETR170Auflistung += "S005.0250.0282.0290.0308.0274.0268;"
+    ETR170Auflistung += "S006.0318.0340.0357.0365.0332.0326;"
+    ETR170Auflistung += "S007.0375.0407.0415.0423.0399.0383;"
+    ETR170Auflistung += "S008.0433.0464.0472.0480.0456.0441;"
+    ETR170Auflistung += "S104.1191.1223.1231.1249.1215.1209;"
+    ETR170Auflistung += "S105.1258.1280.1298.1306.1272.1266;"
+    ETR170Auflistung += "S106.1431.1462.1470.1488.1454.1449;"
+
     function ETR170Suche_SucheButtonClicked()
-    {
-        var ETR170Auflistung = "";
-
-        ETR170Auflistung += "I101.1019.1041.1058.1066.1033.1027;"
-        ETR170Auflistung += "I102.1076.1108.1116.1124.1090.1084;"
-        ETR170Auflistung += "I103.1134.1165.1173.1181.1157.1142;"
-        ETR170Auflistung += "I106.1316.1348.1355.1363.1336.1324;"
-        ETR170Auflistung += "I107.1373.1405.1413.1421.1397.1381;"
-        ETR170Auflistung += "I108.1431.1462.1470.1488.1454.1449;"
-        ETR170Auflistung += "I201.2017.2049.2056.2064.2031.2025;"
-        ETR170Auflistung += "I202.2074.2106.2114.2122.2098.2082;"
-        ETR170Auflistung += "I211.2611.2643.2650.2668.2635.2629;"
-        ETR170Auflistung += "I212.2678.2700.2718.2726.2692.2686;"
-        ETR170Auflistung += "I213.2736.2767.2775.2783.2759.2745;"
-        ETR170Auflistung += "I214.2793.2825.2833.2841.2817.2801;"
-        ETR170Auflistung += "I215.2850.2882.2890.2908.2874.2868;"
-        ETR170Auflistung += "I216.2918.2940.2957.2965.2932.2926;"
-        ETR170Auflistung += "I217.2975.3005.3013.3021.2999.2983;"
-        ETR170Auflistung += "I209.1498.1520.1538.1546.1512.1506;"
-        ETR170Auflistung += "I110.1555.1587.1595.1603.1579.1563;"
-        ETR170Auflistung += "S001.0011.0043.0050.0068.0035.0029;"
-        ETR170Auflistung += "S002.0078.0100.0118.0126.0092.0086;"
-        ETR170Auflistung += "S003.0136.0167.0175.0183.0159.0144;"
-        ETR170Auflistung += "S004.0193.0225.0233.0241.0217.0201;"
-        ETR170Auflistung += "S005.0250.0282.0290.0308.0274.0268;"
-        ETR170Auflistung += "S006.0318.0340.0357.0365.0332.0326;"
-        ETR170Auflistung += "S007.0375.0407.0415.0423.0399.0383;"
-        ETR170Auflistung += "S008.0433.0464.0472.0480.0456.0441;"
-        ETR170Auflistung += "S104.1191.1223.1231.1249.1215.1209;"
-        ETR170Auflistung += "S105.1258.1280.1298.1306.1272.1266;"
-        ETR170Auflistung += "S106.1431.1462.1470.1488.1454.1449;"
-
+    {        
         var titelElement = document.getElementById("ETR170Suche_Wagennummer_TextBox")
         var Suchtext = titelElement.value
         var Ausgabe = document.getElementById("ETR170Suche_Ausgabe_TextBox")
@@ -1187,7 +1187,7 @@
     {
         (async () =>
         {                 
-            var AlleGesichtetenLoksDieserBaureihe = await GetSubvariablen(`Sichtungen/${Baureihe}`);
+            var AlleGesichtetenLoksDieserBaureihe = await GetVariable(`Sichtungen/${Baureihe}`);
             var Konzern = "A-ÖBB";
 
             if(Baureihe == "SETR170") { Konzern = "I-SAD" }
@@ -1195,8 +1195,13 @@
 
             var AusgabeArray = []
 
-            for(VariablenPfad of AlleGesichtetenLoksDieserBaureihe)
+            var Array = Object.entries(AlleGesichtetenLoksDieserBaureihe)
+            for (var [VariablenPfad, VariablenWert] of Array)
             {
+                var Besichtigt = VariablenWert == "1"
+                var Mitgefahren = VariablenWert == "2"
+                var Gefahren = VariablenWert == "3"
+
                 var SlashSplit = VariablenPfad.split("/");
                 var Nummer = SlashSplit[SlashSplit.length - 1]
                 var Pruefziffer = "";
@@ -1204,14 +1209,14 @@
 
                 if(Konzern == "A-ÖBB")
                 {
-                    Pruefziffer = `-${OBB_Pruefziffer_Berechnen(`${Vorderteil}${Baureihe}${Nummer}`)}`;
+                    Pruefziffer = `-${OBB_Pruefziffer_Berechnen(`${Vorderteil}${Baureihe}${Nummer}`)}`
                 }
                 else
                 {
                     BaureiheVerw = "ETR170";
                 }
 
-                AusgabeArray.push(`${Konzern} ${Vorderteil} ${BaureiheVerw} ${Nummer}${Pruefziffer}\n`);
+                AusgabeArray.push(`${Konzern} ${Vorderteil} ${BaureiheVerw} ${Nummer}${Pruefziffer} ${(Gefahren || Mitgefahren || Besichtigt) ? '<img src="https://i.imgur.com/jZao7dQ.png" class="mr-2" height="20px" alt="">' : '<img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'}${(Gefahren || Mitgefahren) ? '<img src="https://i.imgur.com/N8izYzx.png" class="mr-2" height="20px" alt="">' : '<img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'}${Gefahren ? '<img src="https://i.imgur.com/HKWV9id.png" class="mr-2" height="20px" alt="">' : '<img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'}\n`)
             }
 
             AusgabeArray.sort();
@@ -1233,6 +1238,7 @@
                 if(Baureihe == "1163") { AnzahlGesamt = 20 }
                 if(Baureihe == "1063") { AnzahlGesamt = 48 }
                 if(Baureihe == "1064") { AnzahlGesamt = 10 }
+                if(Baureihe == "2068") { AnzahlGesamt = 57 }
                 if(Baureihe == "2070") { AnzahlGesamt = 90 }
 
                 if(AnzahlGesamt > 0)
@@ -1249,6 +1255,8 @@
             document.getElementById("AuflistungLoknummern_Ueberschrift_Label").innerHTML = `${Konzern} ${Vorderteil} ${Baureihe}<br>Bereits gesichtet: ${AnzahlSichtungenBaureiheVerw}`
             document.getElementById("AuflistungLoknummern_Tabelle").innerHTML = ""
             
+
+         
             
 
             for(Eintrag in AusgabeArray)
@@ -1259,11 +1267,11 @@
                 if(AusgabeArray[Eintrag].includes("9181 1144 001"))
                 {
                     BaureiheBildVerw = "1044501"
-                    AusgabeVerw = "A-ÖBB 9181 1044 501-3"
+                    AusgabeVerw = 'A-ÖBB 9181 1044 501-3 <img src="https://i.imgur.com/jZao7dQ.png" class="mr-2" height="20px" alt=""><img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt=""><img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'
                 }
                 else if(AusgabeArray[Eintrag].includes("9181 1144 002"))
                 {
-                    AusgabeVerw = 'Lokkasten ÖBB 1044.02'
+                    AusgabeVerw = 'Lokkasten ÖBB 1044.02 <img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt=""><img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt=""><img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'
                 }
                 else if(AusgabeArray[Eintrag].includes("9181 1144 092") || AusgabeArray[Eintrag].includes("9181 1144 117"))
                 {
@@ -1285,7 +1293,7 @@
                 AuflistungLoknummern_Tabelle.innerHTML += 
                 `
                 <tr>
-                <td><img src="${GetImagePath(BaureiheBildVerw)}" style=" width: 110px" alt="..." class="">&nbsp;&nbsp;&nbsp;${AusgabeVerw}</td>
+                <td><img src="${GetImagePath(BaureiheBildVerw)}" style="width: 80px" alt="..." class="">&nbsp;&nbsp;&nbsp;${AusgabeVerw}</td>
                 </tr>`
             }
         })()
@@ -1737,7 +1745,9 @@
                                 var Baureihe = Eingabe.split(" ")[0]
                                 var Nummer = Eingabe.split(" ")[1]
 
-                                var Gesehen = await GetVariable(`Sichtungen/${Baureihe}/${Nummer}`) == `${Nummer}`
+                                var VarInhalt = await GetVariable(`Sichtungen/${Baureihe}/${Nummer}`)
+                                var Gesehen = false
+                                if(VarInhalt) { Gesehen = true }
                                 var GesehenString = Gesehen ? "JA" : "NEIN"
                                 
                                 var Vorderteil = GetVorderteilFuerBaureihe(Baureihe)
