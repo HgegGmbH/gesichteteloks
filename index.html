@@ -202,7 +202,7 @@
         }
     </script>
 </head>
-<body class="text-center" style="color: rgb(230,230,230); background-color: rgb(41, 41, 41);">    
+<body class="text-center" style="color: rgb(230,230,230); background-color: rgb(41, 41, 41); ">    
     <div class="container mt-5" id="AnmeldungFenster" style="display: none;"> 
         <strong style="font-size: 20pt;">Gesichtete Loks Online</strong><br><br>
         <strong style="font-size: 25pt;">Authentifizierung</strong><br><br>
@@ -282,6 +282,11 @@
             <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><br><button type="button" onclick="AnzahlSichtungenGesamtAktualisieren()" class="btn btn-light">Aktualisieren</button><br><div id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; "><br><div class="spinner-border text-secondary" role="status" style="text-align: center;"></div></div><br><strong style="color: mediumseagreen; font-size: xx-large;" id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
             <br>
 
+            <hr>
+
+            <br>
+            <h1 class="display-4" style="font-size:x-large;">Zusammenfassung aller<br>gefahrener TFZ:<br><br><button type="button" onclick="GetGefahreneLoks()" class="btn btn-light">Anzeigen</button><br></h1>         
+
             <!-- <button onclick="ManuellHinzufuegen()">ManuellHinzufuegen</button> -->
 
             <br><br><br><br><br><br><br><br>
@@ -340,6 +345,14 @@
             <h4 id="ETR170Suche_GesichtetStatus_Label">Keine Daten vorhanden</h4><br>
 
             <br><br><br><br>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="GefahreneLoksSeite" style="display: none;">  
+        <div id="GefahreneLoksSeite_Ladezeichen" style="display: block; "><br><div class="spinner-border text-secondary" role="status" style="text-align: center;"></div></div>
+
+        <div id="GefahreneLoksDIV">
+
         </div>
     </div>
 
@@ -964,6 +977,7 @@
     var ETR170Suche_GesichtetStatus_Ladezeichen = document.getElementById("ETR170Suche_GesichtetStatus_Ladezeichen");
     var ETR170Suche_GesichtetStatus_Label = document.getElementById("ETR170Suche_GesichtetStatus_Label");
     var Güterzug_Seite = document.getElementById("Güterzug_Seite")
+    var GefahreneLoksSeite = document.getElementById("GefahreneLoksSeite")
 
     function AlleSeitenAusblenden()
     {
@@ -978,6 +992,7 @@
         PruefzifferBerechnen.style.display = "none";
         SchonGesehen.style.display = "none"
         Güterzug_Seite.style.display = "none"
+        GefahreneLoksSeite.style.display = "none"
     }
 
     function SeiteWechseln(SeiteName)
@@ -1027,6 +1042,11 @@
                 
                 
             }
+            else if(SeiteName == "GefahreneLoksSeite")
+            {
+                document.getElementById("GefahreneLoksSeite").style.display = "block"
+                Event_GefahreneLoksSeite_Load();
+            }
         })()
     }
 
@@ -1045,6 +1065,56 @@
             Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "none"
             Hauptseite_AnzahlSichtungenGesamt.innerHTML = `${AlleSichtungen.length}`;
         })()
+    }
+
+    function GetGefahreneLoks()
+    {
+        SeiteWechseln("GefahreneLoksSeite")
+    }
+
+    function Event_GefahreneLoksSeite_Load()
+    {
+
+        (async () =>
+        {                 
+
+            var AlleLoks = await GetAlleGefahrenenLoks();
+
+
+            e("GefahreneLoksSeite_Ladezeichen").style.display = "none"
+
+            e("GefahreneLoksSeite_Ladezeichen").style.textAlign = "center"
+
+            e("GefahreneLoksDIV").innerHTML = ""
+
+            
+
+            for(Lok of AlleLoks)
+            {
+                var Baureihe = Lok.split(".")[0]
+                var Nummer = Lok.split(".")[1].padStart(3, "0").toString()
+
+                e("GefahreneLoksDIV").innerHTML += `
+            
+                <div class="card" style="width: 18rem;">
+                <img class="card-img-top" style="padding: 10px;" src="${GetImagePath(Baureihe)}" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">A-ÖBB ${GetVorderteilFuerBaureihe(Baureihe)} ${Baureihe} ${Nummer}-${OBB_Pruefziffer_Berechnen(`${GetVorderteilFuerBaureihe(Baureihe)}${Baureihe}${Nummer}`)}</h5>
+                    <p class="card-text">Bereits gefahren!</p>
+                </div>
+                </div>
+                <br><br>
+
+                `
+            }
+
+           
+            
+
+        })()
+
+
+
     }
 </script>
 
@@ -1452,6 +1522,30 @@
         }
 
         return AlleSichtungen;
+    }
+
+    async function GetAlleGefahrenenLoks()
+    {
+        var ReturnValue = [];
+
+        var ObjectEntries = Object.entries(await GetVariable("Sichtungen"));
+
+        for(ObjectEntry of ObjectEntries)
+        {
+            var Baureihe = ObjectEntry[0]
+
+            var AlleSichtungen = Object.entries(ObjectEntry[1])
+
+            for (var [Nummer, GefahrenStatus] of AlleSichtungen)
+            {
+                if(GefahrenStatus == "3")
+                {
+                    ReturnValue.push(`${Baureihe}.${Nummer}`);
+                }
+            }
+        }
+
+        return ReturnValue;
     }
 
     if(cookieExists("PasswortGesichteteLoks"))
