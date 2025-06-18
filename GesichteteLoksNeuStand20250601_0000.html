@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesichtete Loks</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <style>
+        hr
+        {
+            background-color: rgb(230, 230, 230);
+        }
+
+        .card
+        {
+            color: rgb(41, 41, 41);
+        }
+
+        
+        .AuslistungLokPruefziffer {
+            display: inline-block;
+            vertical-align: top;
+            border: 1px solid rgb(207, 207, 207);
+            border-radius: 5px;
+            width: 300px;
+            height: 150px;
+            padding: 10px;
+            margin-right: 5px;
+            margin-left: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            background-color: rgb(65, 65, 65);
+        }
+    
+    </style>
+
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%C3%96BB_Logo_Pflatsch_neu.svg/452px-%C3%96BB_Logo_Pflatsch_neu.svg.png" type="image/x-icon">
+    <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%C3%96BB_Logo_Pflatsch_neu.svg/452px-%C3%96BB_Logo_Pflatsch_neu.svg.png" type="image/x-icon">
+
+    <script>
+        function e(id) {return document.getElementById(id)}
+
+        var DatabaseURL = "https://gesichteteloks-901b4-default-rtdb.firebaseio.com/";
+
+        const firebaseApp = firebase.initializeApp(
+        { 
+            apiKey: "AIzaSyBe-q3xpq4-gXO3Kkn8UXS_1Jy-6NKZvPQ",
+            authDomain: "gesichteteloks-901b4.firebaseapp.com",
+            databaseURL: "https://gesichteteloks-901b4-default-rtdb.firebaseio.com",
+            projectId: "gesichteteloks-901b4",
+            storageBucket: "gesichteteloks-901b4.appspot.com",
+            messagingSenderId: "470915232996",
+            appId: "1:470915232996:web:8bdd1cefb91ff9aa6da8f1"
+        });
+
+        const db = firebaseApp.firestore();
+        const auth = firebaseApp.auth();
+
+        var database;
+        var dataRef;
+
+        var IstAngemeldet = false;
+
+        function InitGesichteteLoks(PasswortBenutzereingabe)
+        {        
+            var email = "kohlberg068897@gmail.com";
+
+            auth.signInWithEmailAndPassword(email, PasswortBenutzereingabe)
+            .then((userCredential) =>
+            {
+                console.log("Anmeldung erfolgreich:", userCredential.user.uid);
+                database = firebase.database();
+                dataRef = database.ref();
+
+                IstAngemeldet = true;
+                setCookie("PasswortGesichteteLoks", PasswortBenutzereingabe)
+                Event_AnmeldungAbgeschlossen();
+            })
+            .catch((error) => 
+            {
+                //alert(error)
+                IstAngemeldet = false;
+                deleteCookie("PasswortGesichteteLoks");
+                SeiteWechseln("AnmeldungFehlgeschlagen")
+            });
+        }
+
+        function GetVariable(Pfad)
+        {
+            return new Promise((resolve, reject) =>
+            {
+                dataRef.child(Pfad).once("value")
+                    .then((snapshot) =>
+                    {
+                        const variableninhalt = snapshot.val();
+                        resolve(variableninhalt);
+                    })
+                    .catch((error) =>
+                    {
+                        console.log("Fehler beim Lesen der Daten:", error.message);
+                        reject(error);
+                    });
+            });
+        }
+
+        function SetVariable(Pfad, neuerWert)
+        {
+            return new Promise((resolve, reject) =>
+            {
+                dataRef.child(Pfad).set(neuerWert)
+                    .then(() =>
+                    {
+                        console.log(`Erfolgr.geschrieben '${Pfad}', '${neuerWert}'`);
+                        resolve();
+                    })
+                    .catch((error) =>
+                    {
+                        console.log("Fehler beim Schreiben der Daten:", error.message);
+                        reject(error);
+                    });
+            });
+        }
+
+        function GetSubvariablen(Pfad)
+        {
+            return new Promise((resolve, reject) => {
+                dataRef.child(Pfad).once("value")
+                    .then((snapshot) => {
+                        const data = snapshot.val();
+                        if (data && typeof data === "object") {
+                            const subVariablesList = Object.keys(data).map(subVar => `${Pfad}/${subVar}`);
+                            resolve(subVariablesList);
+                        } else {
+                            resolve([]);
+                        }
+                    })
+                    .catch((error) => {
+                        console.log("Fehler beim Lesen der Daten:", error.message);
+                        reject(error);
+                    });
+            });
+        }
+
+        function formatDate(date)
+        {
+            if (!(date instanceof Date))
+            {
+                return "Ungültiges Datum";
+            }
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            const formattedDate = `${day}.${month}.${year}`;
+
+            return formattedDate;
+        }
+
+        function setCookie(name, value)
+        {
+            var expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + 30);
+
+            document.cookie = name + "=" + value + "; expires=" + expirationDate.toUTCString() + "; path=/";
+        }
+
+        function getCookie(name)
+        {
+            var cookieName = name + "=";
+            var cookies = document.cookie.split(';');
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.indexOf(cookieName) === 0) {
+                    return cookie.substring(cookieName.length, cookie.length);
+                }
+            }
+
+            return null;
+        }
+
+        function deleteCookie(name)
+        {
+            document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+
+        function cookieExists(name)
+        {
+            return getCookie(name) !== null;
+        }
+    </script>
+</head>
+<body class="text-center" style="color: rgb(230,230,230); background-color: rgb(41, 41, 41);">    
+    <div class="container mt-5" id="AnmeldungFenster" style="display: none;"> 
+        <strong style="font-size: 20pt;">Gesichtete Loks Online</strong><br><br>
+        <strong style="font-size: 25pt;">Authentifizierung</strong><br><br>
+        <label>Passwort eingeben</label>
+        <input type="password" class="form-control" id="PasswortTextBox" aria-describedby="basic-addon3" placeholder="Passwort eingeben"><br><br>
+        <button type="button" onclick="InitGesichteteLoks(document.getElementById('PasswortTextBox').value)" class="btn btn-primary">Anmelden</button><br><br>
+        <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info">DIREKT ZUM LOKFINDER</button><br><br><br><br>
+    </div>
+
+    <div class="container mt-5" id="AnmeldungFehlgeschlagen" style="display: none;"> 
+        <strong style="font-size: 30pt;">Gesichtete Loks Online</strong><br><br>
+        <strong style="font-size: 35pt; color: rgb(204, 21, 21);">Authentifizierung fehlgeschlagen</strong><br><br>
+        <strong style="font-size: 20pt">Mögliche Ursachen:<br>- Falsches Passwort<br>- Keine Internetverbindung</strong><br><br>
+        <button type="button" onclick="location.reload()" class="btn btn-warning">Erneut versuchen</button>        
+    </div>
+
+    <div class="container mt-5" id="Hauptseite" style="display: none;">          
+        <div>
+            <br><h1 class="display-4">GESICHTETE LOKS</h1><br>
+            <img style="width: 100px" src="https://i.imgur.com/AclnzU4.png" alt="..." class=""><!-- <img style="width:50%" src="https://i.imgur.com/8QUYvH7_d.webp?maxwidth=760&fidelity=grand" alt="..." class=""> -->
+            <br><br>
+            <hr><br>
+            <h5 class="display-4">FAHRZEUG HINZUFÜGEN</h5><br>
+            <button onclick="NeuesFahrzeugHinzufuegenSeiteStarten()" type="button" class="btn btn-success">FAHRZEUG HINZUFÜGEN</button><br><br>            
+            <button onclick="SeiteWechseln('PruefzifferBerechnen')" type="button" class="btn btn-secondary">PRÜFZIFFER</button><button onclick="SeiteWechseln('ETR170Suche')" type="button" class="btn btn-secondary ml-2">ETR170 SUCHE</button><br><br>
+            
+            <button onclick="SeiteWechseln('SchonGesehen')" type="button" class="btn btn-info">BEREITS GESEHEN</button><button onclick="SeiteWechseln('Güterzug_Seite'); GZ_DatumAufHeutigesDatumStellen(); " type="button" class="btn btn-success ml-2">GÜTERZUG</button><br><br>    
+            
+            <div style="display: none;">
+                <button onclick="SeiteWechseln('Lokfinder')" type="button" class="btn btn-info ml-2">LOKFINDER</button><br><br> 
+            </div>
+                
+            <hr><br>
+ 
+            <h5 class="display-4">LOKS</h5><br>
+            <button onclick="AuflistungLoknummernStarten('1144', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1144</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1016', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1016</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1116', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1116</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1216', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1216</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1293', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1293</button><br><br>            
+            <button onclick="AuflistungLoknummernStarten('1142', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1142</button><br><br>
+            <br>
+            DIESEL<br><br>
+            <button onclick="AuflistungLoknummernStarten('2016', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2016</button><br><br>
+            <hr><br>
+    
+            <h5 class="display-4">TRIEBWAGEN</h5><br>
+            <button onclick="AuflistungLoknummernStarten('4020', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4020</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4023', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4023</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4024', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4024</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4124', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4124</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4744', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4744</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4746', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4746</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('4748', '9481')" type="button" class="btn btn-danger">A-ÖBB 9481 4748</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('SETR170', '')" type="button" class="btn btn-danger">I-SAD ETR 170</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('TETR170', '')" type="button" class="btn btn-danger">I-TI ETR 170</button><br><br>            
+            <hr><br>
+
+            <h5 class="display-4">STEUERWAGEN</h5><br>
+            <button onclick="AuflistungLoknummernStarten('8073', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8073</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('8633', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8633</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('8090', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8090</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('8091', '5081')" type="button" class="btn btn-danger">A-ÖBB 5081 8091</button><br><br>
+            <hr><br>
+    
+            <h5 class="display-4">VERSCHUB</h5><br>
+            ELEKTRO<br><br>
+            <button onclick="AuflistungLoknummernStarten('1163', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1163</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1063', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1063</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('1064', '9181')" type="button" class="btn btn-danger">A-ÖBB 9181 1064</button><br><br>
+            <br>
+            DIESEL<br><br>
+            <button onclick="AuflistungLoknummernStarten('2068', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2068</button><br><br>
+            <button onclick="AuflistungLoknummernStarten('2070', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2070</button><br><br>            
+            <hr><br><br>
+            <h1 class="display-4" style="font-size:xx-large;">Zusammenfassung</h1>
+            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><br><button type="button" onclick="AnzahlSichtungenGesamtAktualisieren()" class="btn btn-light">Aktualisieren</button><br><div id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; "><br><div class="spinner-border text-secondary" role="status" style="text-align: center;"></div></div><br><strong style="color: mediumseagreen; font-size: xx-large;" id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
+            <br>
+
+            <!-- <button onclick="ManuellHinzufuegen()">ManuellHinzufuegen</button> -->
+
+            <br><br><br><br><br><br><br><br>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="FahrzeugHinzufuegen" style="display: none;">  
+        <div style="width:100%; border:hidden" class="text-center">
+            <h1 class="display-4">Neues Fahrzeug hinzufügen</h1>
+    
+            <br>
+            <hr>
+            <br>
+    
+            <div class="form-group">
+                <input type="text" class="form-control" id="FahrzeugHinzufuegen_Baureihe_TextBox" aria-describedby="" placeholder="1144 oder SETR170 oder TETR170" name="Baureihe" value="">
+                <small id="" class="form-text text-muted text-left">Gib hier die Baureihe ein</small>
+            </div>
+
+            <div class="form-group">
+                <input type="text" class="form-control" id="FahrzeugHinzufuegen_Nummer_TextBox" aria-describedby="" placeholder="125 oder 012 oder 218" name="Nummer" value="">
+                <small id="" class="form-text text-muted text-left">Gib hier die Dreistellige Nummer ein</small>
+            </div>
+
+            <br><div class="spinner-border text-secondary" role="status" id="FahrzeugHinzufuegen_Ladezeichen" style="display: none; text-align: center;"></div><br><br>
+            <button onclick="FahrzeugHinzufuegenFunktion(document.getElementById('FahrzeugHinzufuegen_Baureihe_TextBox').value, document.getElementById('FahrzeugHinzufuegen_Nummer_TextBox').value)" type="button" class="btn btn-success">Fahrzeug hinzufügen</button><br><br>
+            <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button><br><br><br><br><br>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="ETR170Suche" style="display: none;">  
+        <div class="text-center">
+            <br>
+            <br>
+            <h1>ETR 170 SUCHE</h1>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="">Wagennummer</span>
+                </div>
+                <input type="text" class="form-control" placeholder="3-stellig" id="ETR170Suche_Wagennummer_TextBox">
+            </div>
+
+            <button onclick="ETR170Suche_SucheButtonClicked()" type="button" class="btn btn-success">Suche starten</button><br><br>
+            <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button>
+            <br><br><br>
+            <h4>Ausgabe der Suche</h4>
+            <div class="alert alert-info mt-2" role="alert" id="ETR170Suche_Ausgabe_TextBox">
+                Bitte gib eine Wagennummer ein
+            </div>
+
+            <br>
+
+            <h4><strong>Gesichtet Status:</strong></h4><br>
+            <div class="spinner-border text-secondary" role="status" id="ETR170Suche_GesichtetStatus_Ladezeichen" style="display: inline-block; text-align: center;"></div>
+            <h4 id="ETR170Suche_GesichtetStatus_Label">Keine Daten vorhanden</h4><br>
+
+            <br><br><br><br>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="AuflistungLoknummern" style="display: none;">     
+        <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button>
+        <br><br><br>
+        <div style="width:100%; border:hidden" class="text-center">
+            <table class="table" style="color: rgb(230, 230, 230);">
+                <thead>
+                    <tr>
+                        <th scope="col" id="AuflistungLoknummern_Ueberschrift_Label"></th>
+                    </tr>
+                </thead>
+                <tbody id="AuflistungLoknummern_Tabelle">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="container mt-5" id="AbschlussHinzufuegenSeite" style="display: none;">     
+        <div class="text-center">
+            <br>
+            <br>
+            <h1><strong>Info</strong></h1><br><br>
+
+            <h2><strong id="AbschlussHinzufuegenSeite_Ueberschrift">Unbekannter Zustand</strong></h2><br><br>
+            <div class="alert alert-success mt-2" role="alert" id="AbschlussHinzufuegenSeite_BaureiheNummer">
+                Loknummmer
+            </div>
+            <br><br>
+            <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-secondary">Zum Hauptmenü</button>
+        </div>
+    </div>
+
+    
+    <div class="container mt-5" id="PruefzifferBerechnen" style="display: none;">
+        <br><h1 class="display-4">ÖBB PRÜFZIFFER BERECHNEN</h1><br>
+
+        <div class="form-group">
+            <input type="text" oninput="PruefzifferBerechnen_ElfstelligeNummer_TextChanged()" class="form-control" id="PruefzifferBerechnen_ElfstelligeNummer" aria-describedby="" placeholder="z.B: 91811144012" name="" value="">
+            <small id="" class="form-text text-muted text-left">Gib hier die 11 - stellige Nummer des Fahrzeuges ein.</small>
+            <br><br>
+            <div>
+                <strong>Information Vorterteil:</strong><br>
+                Bei Elektroloks: 9181<br>
+                Bei Dieselloks: 9281<br>
+                Bei Steuerwägen: 5081<br>
+                Bei Triebwägen: 9481<br>
+                Bei ETR170: 9483
+            </div>
+            <br><br>
+            <div style="font-size: xx-large; display: none; color: mediumseagreen;" id="PruefzifferBerechnen_PruefzifferDIV">Prüfziffer = <strong id="PruefzifferBerechnen_PruefzifferLabel">0</strong></div><br><br>
+            <br>
+
+            <div style="font-size: xx-large;">Hier Lok auswählen:</div><br>
+            <div id="AuslistungenLoksPruefziffer">
+                
+            </div>
+            <br><br>            
+            <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger">Zurück zum Hauptmenü</button>
+            <br><br><br><br><br>
+        </div>
+
+    </div>
+
+    <div class="container mt-5" id="SchonGesehen" style="display: none;">
+        <h1 class="display-4">Lok schon gesehen?</h1><br><br>
+
+        <div class="form-group">
+            <input type="text" class="form-control" id="SchonGesehenTextBox" aria-describedby="" placeholder="LOK NUMMER" name="Baureihe" value="">
+            <small id="" class="form-text text-muted text-left">Baureihe Leerzeichen Nummer eingeben</small>
+        </div>
+
+        <button onclick="SchonGesehenUeberpruefen(document.getElementById('SchonGesehenTextBox').value)" type="button" class="btn btn-info">Überprüfen</button><button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger ml-2">Zurück zum Hauptmenü</button><br><br>
+        <br><br><br>
+        <div id="SchonGesehenErgebnis"></div>
+    </div>
+
+    <div class="container mt-5" id="Lokfinder" style="display: none; text-align: center;">     
+        <br><h1 class="display-4">ÖBB LOKFINDER</h1><br>
+        <button onclick="SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger" id="Lokfinder_ZurueckZumHauptmenueButton">Zurück zum Hauptmenü</button><br><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/49079362403_62ce7fc222_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9181 1216 229-5</strong></h5>
+                <p class="card-text" id="Standort_1216.0229"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/der-oebb-klimaticket-railjet-faehrt-1298298.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 5081 8090 744-8</strong></h5>
+                <p class="card-text" id="Standort_8090.0744"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://css.trainspo.com/uploads/photos/1024/510-64082v0_20150513.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4124 014-3</strong></h5>
+                <p class="card-text" id="Standort_4124.0014"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/4124-013-6-am-06september-2014-924192.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4124 013-5</strong></h5>
+                <p class="card-text" id="Standort_4124.0013"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/201706/OBB_Talent_4020_130_S45_20664_Wien_Ottakring_13_06_2017_Wolfgang_Kaeppl_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 130-8</strong></h5>
+                <p class="card-text" id="Standort_4024.0130"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://eisenbahn.blog/wp-content/uploads/2023/12/image-6-1024x683.png" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 123-3</strong></h5>
+                <p class="card-text" id="Standort_4024.0123"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://bahnbilder.warumdenn.net/pics/Bilder_13/4024_120_4023_Bruck_Mur_Stausee_21072013.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 120-9</strong></h5>
+                <p class="card-text" id="Standort_4024.0120"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/1200/4024-040-bei-kraubath-am-1218501.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 118-3</strong></h5>
+                <p class="card-text" id="Standort_4024.0118"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/oebb-4024-103-macht-ja-1030381.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 103-5</strong></h5>
+                <p class="card-text" id="Standort_4024.0103"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/4024-089-mit-4124-022-635262.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 089-6</strong></h5>
+                <p class="card-text" id="Standort_4024.0089"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/201510/4024_088_REX_5305_Hall_in_Tirol_30_09_2015_Tiroler_Cobra_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 088-8</strong></h5>
+                <p class="card-text" id="Standort_4024.0088"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/%C3%96BB_4024_085_Mastercard_03.jpg/2560px-%C3%96BB_4024_085_Mastercard_03.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 085-4</strong></h5>
+                <p class="card-text" id="Standort_4024.0085"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/oebb-4024-016-0-am-30november-1192080.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 016-9</strong></h5>
+                <p class="card-text" id="Standort_4024.0016"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://lh6.googleusercontent.com/proxy/A3A1nADrvlTi40aANEs3ycbiUU7d-N2Kt196jfSn3W5R7_PAHGSVq-5vt4KI5J-pF0XsVfc1CdOW23ogcXtgLnz0jdxNxHJkjcnLhU0Qsw" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 015-1</strong></h5>
+                <p class="card-text" id="Standort_4024.0015"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/201604/4024_014_R_1713_Kindberg_im_MYrztal_27_03_2016_Werner_Grill_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 9481 4024 014-4</strong></h5>
+                <p class="card-text" id="Standort_4024.0014"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.railroadpics.net/photos/4853_Siemens-Vectron-MS_1293-200.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1293 200-2</strong></h5>
+                <p class="card-text" id="Standort_1293.0200"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/32303629117_0e36140a35_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1293 018-8</strong></h5>
+                <p class="card-text" id="Standort_1293.0018"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.elektrolok.de/bilder2011/rwy_1216210_WienWestbahnhof_061011_1.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1216 210-5</strong></h5>
+                <p class="card-text" id="Standort_1216.0210"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.ytimg.com/vi/Mxz27wFRpCI/maxresdefault.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1216 022-4</strong></h5>
+                <p class="card-text" id="Standort_1216.0022"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/1551/24462444043_b59bda12d3_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1216 019-0</strong></h5>
+                <p class="card-text" id="Standort_1216.0019"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/1200/oebb-1216-012-5-nightjet-mit-1262727.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1216 012-5</strong></h5>
+                <p class="card-text" id="Standort_1216.0012"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/51218338845_9fc7aa9993_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 276</strong></h5>
+                <p class="card-text" id="Standort_1116.0276"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.ebayimg.com/images/g/-5cAAOSwnIleoDYZ/s-l400.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 250-2</strong></h5>
+                <p class="card-text" id="Standort_1116.0250"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/202111/1116_249_rj_797_penk_tauernbahn_30_10_2021_martin_kolenig_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 249-4</strong></h5>
+                <p class="card-text" id="Standort_1116.0249"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.elektrolokarchiv.de/images/basic/siem_20952_70.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 231-2</strong></h5>
+                <p class="card-text" id="Standort_1116.0231"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/d/d9/%C3%96BB_1116_229_in_Graz_Hauptbahnhof.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 229-6</strong></h5>
+                <p class="card-text" id="Standort_1116.0229"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/9/9d/OEBB_1116_222_Zuerich_HB_250615.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 222-1</strong></h5>
+                <p class="card-text" id="Standort_1116.0222"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.ebayimg.com/images/g/q1gAAOSwTy5fJfkz/s-l1600.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 200-7</strong></h5>
+                <p class="card-text" id="Standort_1116.0200"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.railroadpics.net/photos/4482_Siemens-ES-64-U2_1116-199.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 199-1</strong></h5>
+                <p class="card-text" id="Standort_1116.0199"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.pinimg.com/originals/c5/e6/34/c5e634102c5bc93bce3ae085ce855cb0.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 195-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0195"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/51332743500_c9ff1a9120_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 182-7</strong></h5>
+                <p class="card-text" id="Standort_1116.0182"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.modellbahn.at/images/product_images/original_images/jc28100.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 181-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0181"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/7/7d/%C3%96BB_1116_165_Bio_N%C3%96_Wien_8941_M%C3%B61997.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 165-2</strong></h5>
+                <p class="card-text" id="Standort_1116.0165"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/65535/51380134310_629f830242_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 158-7</strong></h5>
+                <p class="card-text" id="Standort_1116.0158"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.railroadpics.net/photos/1911_Siemens-ES-64-U2_1116-157.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 157-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0157"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://i.ytimg.com/vi/zDQS7QjBXlw/maxresdefault.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 153-8</strong></h5>
+                <p class="card-text" id="Standort_1116.0153"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/1116-143-montan-mit-gueterzug-795164.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 143-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0143"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.bahnbilder.de/bilder/1116-077-michelangelogalileo-war-am-799775.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 077-9</strong></h5>
+                <p class="card-text" id="Standort_1116.0077"></p>
+            </div>
+        </div><br><br>
+
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.railroadpics.net/photos/1121_Siemens-ES-64-U2_1116-016.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1116 016-7</strong></h5>
+                <p class="card-text" id="Standort_1116.0016"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.tauernbahn.at/img/201703/1063_039__Leoben_GYss_02_03_2017_gergo_1024.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1063 039-2</strong></h5>
+                <p class="card-text" id="Standort_1063.0039"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/commons/7/79/%C3%96BB_1016_023_8530_M%C3%B61997.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1016 023-4</strong></h5>
+                <p class="card-text" id="Standort_1016.0023"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://www.elektrolokarchiv.de/images/basic/siem_20369_65.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1016 021-8</strong></h5>
+                <p class="card-text" id="Standort_1016.0021"></p>
+            </div>
+        </div><br><br>
+        
+        <div class="card mx-auto" style="width: 18rem;">
+            <img class="card-img-top" src="https://live.staticflickr.com/856/41843488560_79eed52f7b_b.jpg" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title"><strong>A-ÖBB 1016 020-0</strong></h5>
+                <p class="card-text" id="Standort_1016.0020"></p>
+            </div>
+        </div><br><br>
+    </div>
+
+    <div class="container mt-5 ml-3" id="Güterzug_Seite" style="display: none; text-align: left; width: 90%;">
+        <strong style="font-size: xx-large;">GÜTERZUG</strong><br><br>
+
+        <strong>Datum</strong><br>
+        <input type="date" style="width: 150px;" onchange="GZ_SeiteReset()" class="form-control" id="GZ_Datum" min="2024-01-01" placeholder=""><br>
+
+        <strong class="mt-3">Ankunftszeit in Sillian</strong><br>
+        <button onclick="GZ_ZeitAuswaehlen('GZ_Zeit_1148')" type="button" id="GZ_Zeit_1148" class="btn btn-outline-primary">11:48</button>
+        <button onclick="GZ_ZeitAuswaehlen('GZ_Zeit_1248')" type="button" id="GZ_Zeit_1248" class="btn btn-outline-primary ml-2">12:48</button>
+        <button onclick="GZ_ZeitAuswaehlen('GZ_Zeit_1348')" type="button" id="GZ_Zeit_1348" class="btn btn-outline-primary ml-2">13:48</button>
+        <button onclick="GZ_ZeitAuswaehlen('GZ_Zeit_0000')" type="button" id="GZ_Zeit_0000" class="btn btn-outline-primary ml-2">Sonstiges</button>
+        <br><br>
+
+        <div id="GZ_TFZe" style="display: none;">
+            <strong>Triebfahrzeuge</strong><br><br>
+
+            <div class="card" style="width: 18rem; background-color: rgb(37, 37, 37); color: rgb(230, 230, 230); border-color: rgb(105, 105, 105);">
+                <img class="card-img-top" id="GZ_Lok1_Bild" src="https://i.imgur.com/J31o7m3.png" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">TFZ1: <span id="GZ_Lok1">Keine Lok</span></h5>
+                    <a href="#" onclick="LokFestlegen(1, prompt('Baureihe eingeben:'), prompt('3-stellige Loknummer eingeben:'))" class="btn btn-primary">Lok auswählen</a>
+                </div>
+            </div>
+    
+            <br><br>
+    
+            <div class="card" style="width: 18rem; background-color: rgb(37, 37, 37); color: rgb(230, 230, 230); border-color: rgb(105, 105, 105);">
+                <img class="card-img-top" id="GZ_Lok2_Bild" src="https://i.imgur.com/J31o7m3.png" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">TFZ2: <span id="GZ_Lok2">Keine Lok</span></h5>
+                    <a href="#" onclick="LokFestlegen(2, prompt('Baureihe eingeben:'), prompt('3-stellige Loknummer eingeben:'))" class="btn btn-primary">Lok auswählen</a>
+                </div>
+            </div>
+        </div>
+        
+        <br><br>
+        <button onclick="GZ_Speichern()" type="button" class="btn btn-success">Speichern</button><button onclick="GZ_SeiteReset(); SeiteWechseln('Hauptseite')" type="button" class="btn btn-danger ml-2">Zurück zum Hauptmenü</button><br><br>
+        <br><br><br><br><br>
+    </div>
+    
+    <br><br><br><br>
+</body>
+</html>
+
+
+<!-- Güterzug Seite -->
+<script>
+    var currentDate = new Date()
+
+    function GZ_DatumAufHeutigesDatumStellen()
+    {
+        document.getElementById('GZ_Datum').value = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+    }    
+
+    GZ_DatumAufHeutigesDatumStellen()
+
+    var URL_KeinBild = "https://i.imgur.com/J31o7m3.png"
+    var GZ_AusgewaehlteZeit = ""
+
+    var GZ_Baureihe1 = ""
+    var GZ_Baureihe2 = ""
+    var GZ_Nummer1 = ""
+    var GZ_Nummer2 = ""
+
+
+    function GZ_ZeitAuswaehlen(ZeitString)
+    {
+        GZ_ZeitAbwaehlen("GZ_Zeit_1148"); GZ_ZeitAbwaehlen("GZ_Zeit_1248"); GZ_ZeitAbwaehlen("GZ_Zeit_1348"); GZ_ZeitAbwaehlen("GZ_Zeit_0000")
+
+        if(e(ZeitString) != undefined)
+        {
+            GZ_SeiteReset()
+            e(ZeitString).classList.add("btn-primary")
+            e(ZeitString).classList.remove("btn-outline-primary")
+            GZ_AusgewaehlteZeit = ZeitString
+            e("GZ_TFZe").style.display = "block"
+            GZ_Load()
+        }
+        else
+        {
+            GZ_AusgewaehlteZeit = ""
+        }
+    }
+
+    function GZ_ZeitAbwaehlen(ZeitString)
+    {
+        e(ZeitString).classList.remove("btn-primary")
+        e(ZeitString).classList.add("btn-outline-primary")
+        e("GZ_TFZe").style.display = "none"        
+    }
+
+    function LokFestlegen(Lok_1_oder_2, Baureihe, Nummer, FunktionAusgeloestDurchGZLoad)
+    {
+        if(Baureihe.length == 4 && Nummer.length == 3)
+        {
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).src = GetImagePath(Baureihe)
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.width = "90%"
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.marginTop = "5%"
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.marginBottom = "5%"
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.marginLeft = "5%"
+            e(`GZ_Lok${Lok_1_oder_2}_Bild`).style.marginRight = "5%"
+            
+            e(`GZ_Lok${Lok_1_oder_2}`).innerHTML = `${Baureihe} ${Nummer}`
+
+            if(Lok_1_oder_2 == 1)
+            {
+                GZ_Baureihe1 = Baureihe
+                GZ_Nummer1 = Nummer
+            }
+            else
+            {
+                GZ_Baureihe2 = Baureihe
+                GZ_Nummer2 = Nummer
+            }
+        }
+        else
+        {
+            if(FunktionAusgeloestDurchGZLoad != true)
+            {
+                alert("Fehlerhafte Eingabe!")
+            }            
+        }
+    }
+
+    function GZ_Speichern()
+    {
+        (async () =>
+        {                 
+            if(GZ_AusgewaehlteZeit != "" && GZ_Datum != null && GZ_Datum != undefined && GZ_Datum != "")
+            {
+                var GZ_Datum_String = e("GZ_Datum").value.toString();
+                await SetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok1/Baureihe`, GZ_Baureihe1)
+                await SetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok1/Nummer`, GZ_Nummer1)
+                await SetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok2/Baureihe`, GZ_Baureihe2)
+                await SetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok2/Nummer`, GZ_Nummer2)
+
+                GZ_SeiteReset(); SeiteWechseln('Hauptseite')
+            }
+            else
+            {
+                alert("Fehlerhafte Eingabe!")
+            }
+        })()
+    }
+
+    function GZ_Load()
+    {
+        (async () =>
+        {                 
+            if(GZ_AusgewaehlteZeit != "" && GZ_Datum != null && GZ_Datum != undefined && GZ_Datum != "")
+            {
+                var GZ_Datum_String = e("GZ_Datum").value.toString();
+
+                LokFestlegen(1, await GetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok1/Baureihe`), await GetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok1/Nummer`), true)
+                LokFestlegen(2, await GetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok2/Baureihe`), await GetVariable(`GZ/${GZ_Datum_String}/${GZ_AusgewaehlteZeit}/Lok2/Nummer`), true)            
+            }
+        })()
+    }
+
+    function GZ_SeiteReset()
+    {        
+        for (let i = 1; i <= 2; i++)
+        {
+            e(`GZ_Lok${i}_Bild`).src = URL_KeinBild
+            e(`GZ_Lok${i}_Bild`).style.width = "100%"
+            e(`GZ_Lok${i}_Bild`).style.marginTop = "0%"
+            e(`GZ_Lok${i}_Bild`).style.marginBottom = "0%"
+            e(`GZ_Lok${i}_Bild`).style.marginLeft = "0%"
+            e(`GZ_Lok${i}_Bild`).style.marginRight = "0%"
+
+            e(`GZ_Lok${i}`).innerHTML = `Keine Lok`
+
+            GZ_ZeitAuswaehlen("Zeit zurucksetzen")
+            
+            GZ_Baureihe1 = GZ_Baureihe2 = GZ_Nummer1 = GZ_Nummer2 = GZ_AusgewaehlteZeit = ""
+        }
+    }
+</script>
+
+<!-- Seiten Switcher -->
+<script>
+    var AnmeldungFenster = document.getElementById("AnmeldungFenster")
+    var Hauptseite = document.getElementById("Hauptseite")
+    var FahrzeugHinzufuegen = document.getElementById("FahrzeugHinzufuegen")
+    var ETR170Suche = document.getElementById("ETR170Suche")
+    var AuflistungLoknummern = document.getElementById("AuflistungLoknummern")
+    var AnmeldungFehlgeschlagen = document.getElementById("AnmeldungFehlgeschlagen")
+    var AbschlussHinzufuegenSeite = document.getElementById("AbschlussHinzufuegenSeite")
+    var Hauptseite_AnzahlSichtungenGesamt = document.getElementById("Hauptseite_AnzahlSichtungenGesamt")
+    var Hauptseite_AnzahlSichtungenGesamt_Ladezeichen = document.getElementById("Hauptseite_AnzahlSichtungenGesamt_Ladezeichen")
+    var Lokfinder = document.getElementById("Lokfinder");
+    var PruefzifferBerechnen = document.getElementById("PruefzifferBerechnen");
+    var PruefzifferBerechnen_PruefzifferDIV = document.getElementById("PruefzifferBerechnen_PruefzifferDIV");
+    var PruefzifferBerechnen_ElfstelligeNummer = document.getElementById("PruefzifferBerechnen_ElfstelligeNummer");
+    var ETR170Suche_GesichtetStatus_Ladezeichen = document.getElementById("ETR170Suche_GesichtetStatus_Ladezeichen");
+    var ETR170Suche_GesichtetStatus_Label = document.getElementById("ETR170Suche_GesichtetStatus_Label");
+    var Güterzug_Seite = document.getElementById("Güterzug_Seite")
+
+    function AlleSeitenAusblenden()
+    {
+        AnmeldungFenster.style.display = "none";
+        Hauptseite.style.display = "none";
+        FahrzeugHinzufuegen.style.display = "none";
+        ETR170Suche.style.display = "none";
+        AuflistungLoknummern.style.display = "none";
+        AnmeldungFehlgeschlagen.style.display = "none";
+        AbschlussHinzufuegenSeite.style.display = "none";
+        Lokfinder.style.display = "none";
+        PruefzifferBerechnen.style.display = "none";
+        SchonGesehen.style.display = "none"
+        Güterzug_Seite.style.display = "none"
+    }
+
+    function SeiteWechseln(SeiteName)
+    {
+        AlleSeitenAusblenden();
+        document.getElementById(SeiteName).style.display = "inline-block";
+
+        (async () =>
+        {    
+            if(SeiteName == "Hauptseite")
+            {
+                PruefzifferBerechnen_ElfstelligeNummer.value = "";
+                PruefzifferBerechnen_PruefzifferDIV.style.display = "none";
+                PruefzifferBerechnen_PruefzifferLabel.innerHTML = "?";
+
+                ETR170Suche_GesichtetStatus_Ladezeichen.style.display = "none"
+                ETR170Suche_GesichtetStatus_Label.innerHTML = "Keine Daten vorhanden"
+
+                           
+            }
+            else if(SeiteName == "Lokfinder")
+            {
+                if(!IstAngemeldet)
+                {
+                    document.getElementById("Lokfinder_ZurueckZumHauptmenueButton").style.display = "none";
+                }
+
+                Lokfinder_GetStandorte();
+            }
+            else if(SeiteName == "SchonGesehen")
+            {
+                SchonGesehenErgebnis.innerHTML = ""
+                SchonGesehenTextBox.value = ""
+            }
+            else if(SeiteName == "PruefzifferBerechnen")
+            {                
+                var Baureihen = ["1144", "1016", "1116", "1216", "1293", "1142", "2016", "4020", "4023", "4024", "4124", "4744", "4746", "4748", "SETR170", "TETR170", "8073", "8633", "8090", "8091", "1163", "1063", "1064", "2068", "2070"]
+
+                for(Baureihe of Baureihen)
+                {
+                    var AnzeigeTextBox = `${GetVorderteilFuerBaureihe(Baureihe)}${Baureihe}`
+                    e("AuslistungenLoksPruefziffer").innerHTML += `
+                    <div class="AuslistungLokPruefziffer" onclick="e('PruefzifferBerechnen_ElfstelligeNummer').value = ${AnzeigeTextBox}; window.scrollTo(0, 0); e('PruefzifferBerechnen_ElfstelligeNummer').focus()" >
+                        <img style="width:200px; ${Baureihe[0] == "8" || Baureihe == "4020" || (Baureihe[0] == "2" && Baureihe != "2068" && Baureihe != "2070") ? "margin-top:25px" : ""}" src="${GetImagePath(Baureihe)}" alt=""><br><br><strong style="font-size:x-large;">${GetVorderteilFuerBaureihe(Baureihe)} ${Baureihe}</strong>
+                    </div> `
+                }
+                
+                
+            }
+        })()
+    }
+
+    function Event_AnmeldungAbgeschlossen()
+    {
+        SeiteWechseln("Hauptseite");
+    }
+
+    function AnzahlSichtungenGesamtAktualisieren()
+    {
+        (async () =>
+        {                 
+            Hauptseite_AnzahlSichtungenGesamt.innerHTML = "";
+            Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "inline-block"     
+            var AlleSichtungen = await GetAlleSichtungen();
+            Hauptseite_AnzahlSichtungenGesamt_Ladezeichen.style.display = "none"
+            Hauptseite_AnzahlSichtungenGesamt.innerHTML = `${AlleSichtungen.length}`;
+        })()
+    }
+</script>
+
+<!-- ETR 170 Sucher -->
+<script>
+    var ETR170Auflistung = "";
+
+    ETR170Auflistung += "I101.1019.1041.1058.1066.1033.1027;"
+    ETR170Auflistung += "I102.1076.1108.1116.1124.1090.1084;"
+    ETR170Auflistung += "I103.1134.1165.1173.1181.1157.1142;"
+    ETR170Auflistung += "I106.1316.1348.1355.1363.1336.1324;"
+    ETR170Auflistung += "I107.1373.1405.1413.1421.1397.1381;"
+    ETR170Auflistung += "I108.1431.1462.1470.1488.1454.1449;"
+    ETR170Auflistung += "I201.2017.2049.2056.2064.2031.2025;"
+    ETR170Auflistung += "I202.2074.2106.2114.2122.2098.2082;"
+    ETR170Auflistung += "I211.2611.2643.2650.2668.2635.2629;"
+    ETR170Auflistung += "I212.2678.2700.2718.2726.2692.2686;"
+    ETR170Auflistung += "I213.2736.2767.2775.2783.2759.2745;"
+    ETR170Auflistung += "I214.2793.2825.2833.2841.2817.2801;"
+    ETR170Auflistung += "I215.2850.2882.2890.2908.2874.2868;"
+    ETR170Auflistung += "I216.2918.2940.2957.2965.2932.2926;"
+    ETR170Auflistung += "I217.2975.3005.3013.3021.2999.2983;"
+    ETR170Auflistung += "I209.1498.1520.1538.1546.1512.1506;"
+    ETR170Auflistung += "I110.1555.1587.1595.1603.1579.1563;"
+    ETR170Auflistung += "S001.0011.0043.0050.0068.0035.0029;"
+    ETR170Auflistung += "S002.0078.0100.0118.0126.0092.0086;"
+    ETR170Auflistung += "S003.0136.0167.0175.0183.0159.0144;"
+    ETR170Auflistung += "S004.0193.0225.0233.0241.0217.0201;"
+    ETR170Auflistung += "S005.0250.0282.0290.0308.0274.0268;"
+    ETR170Auflistung += "S006.0318.0340.0357.0365.0332.0326;"
+    ETR170Auflistung += "S007.0375.0407.0415.0423.0399.0383;"
+    ETR170Auflistung += "S008.0433.0464.0472.0480.0456.0441;"
+    ETR170Auflistung += "S104.1191.1223.1231.1249.1215.1209;"
+    ETR170Auflistung += "S105.1258.1280.1298.1306.1272.1266;"
+    ETR170Auflistung += "S106.1431.1462.1470.1488.1454.1449;"
+
+    function ETR170Suche_SucheButtonClicked()
+    {        
+        var titelElement = document.getElementById("ETR170Suche_Wagennummer_TextBox")
+        var Suchtext = titelElement.value
+        var Ausgabe = document.getElementById("ETR170Suche_Ausgabe_TextBox")
+
+        var ausgabestring = ""
+
+        var BaureiheNummer = "";
+
+        ETR170Auflistung.split(";").forEach(function (GesamterZug)
+        {
+            GesamterZug.split(".").forEach(function (WagenNummer)
+            {
+                if (!WagenNummer.startsWith("I") && !WagenNummer.startsWith("S"))
+                {
+                    if (WagenNummer.substring(0, 3) == Suchtext)
+                    {
+                        var ETR170_Nummer = GesamterZug.split(".")[0];
+
+                        if (ETR170_Nummer.startsWith("S"))
+                        {
+                            ausgabestring += "<strong>I-SAD</strong> ";
+                            BaureiheNummer += "SETR170.";
+                        }
+                        else if (ETR170_Nummer.startsWith("I"))
+                        {
+                            ausgabestring += "<strong>I-TI</strong> ";
+                            BaureiheNummer += "TETR170.";
+                        }
+
+                        var Zugnummer = GesamterZug.split(".")[0].replace("S", "").replace("I", "");
+
+                        ausgabestring += "ETR170.<strong>";
+                        ausgabestring += Zugnummer;
+                        ausgabestring += "</strong><br><br>";
+                        BaureiheNummer += Zugnummer;
+
+                        var pos = 0
+                        GesamterZug.split(".").forEach(function (WagenNummer2)
+                        {
+                            if (pos != 0)
+                            {
+                                if (pos == 1 || pos == 6)
+                                {
+                                    ausgabestring += "94 83 4 170 "
+                                }
+                                else
+                                {
+                                    ausgabestring += "94 83 0 170 "
+                                }
+
+
+                                ausgabestring += WagenNummer2.substring(0, 3)
+                                ausgabestring += "-"
+                                ausgabestring += WagenNummer2[3]
+                                ausgabestring += "<br>"
+                            }
+
+                            pos++
+                        })
+                    }
+                }
+            })
+        })
+
+        if (ausgabestring == "" || Suchtext == "") {
+            Ausgabe.innerHTML = "Leider keinen Zug gefunden"
+
+            ETR170Suche_GesichtetStatus_Ladezeichen.style.display = "none"
+            ETR170Suche_GesichtetStatus_Label.innerHTML = "Keine Daten vorhanden"
+        }
+        else {
+            Ausgabe.innerHTML = ausgabestring;
+
+            
+
+            (async () =>
+            {      
+                var Gesehen = false;
+
+                ETR170Suche_GesichtetStatus_Ladezeichen.style.display = "inline-block"
+                ETR170Suche_GesichtetStatus_Label.innerHTML = ""
+                
+                var AlleSichtungen = await GetAlleSichtungen();
+                for(Sichtung of AlleSichtungen)
+                {                    
+                    if(Sichtung == BaureiheNummer)
+                    {
+                        Gesehen = true;
+                    }
+                }
+
+                ETR170Suche_GesichtetStatus_Ladezeichen.style.display = "none"
+                ETR170Suche_GesichtetStatus_Label.innerHTML = Gesehen ? "Bereits gesichtet." : "Noch nicht gesichtet!";
+            })()
+        }
+    }
+</script>
+
+<!-- AuflistungLoknummern -->
+<script>
+    function AuflistungLoknummernStarten(Baureihe, Vorderteil)
+    {
+        (async () =>
+        {                 
+            var AlleGesichtetenLoksDieserBaureihe = await GetVariable(`Sichtungen/${Baureihe}`);
+            var Konzern = "A-ÖBB";
+
+            if(Baureihe == "SETR170") { Konzern = "I-SAD" }
+            if(Baureihe == "TETR170") { Konzern = "I-TI" }
+
+            var AusgabeArray = []
+
+            var Array = Object.entries(AlleGesichtetenLoksDieserBaureihe)
+            for (var [VariablenPfad, VariablenWert] of Array)
+            {
+                var Besichtigt = VariablenWert == "1"
+                var Mitgefahren = VariablenWert == "2"
+                var Gefahren = VariablenWert == "3"
+
+                var SlashSplit = VariablenPfad.split("/");
+                var Nummer = SlashSplit[SlashSplit.length - 1]
+                var Pruefziffer = "";
+                var BaureiheVerw = Baureihe;
+
+                if(Konzern == "A-ÖBB")
+                {
+                    Pruefziffer = `-${OBB_Pruefziffer_Berechnen(`${Vorderteil}${Baureihe}${Nummer}`)}`
+                }
+                else
+                {
+                    BaureiheVerw = "ETR170";
+                }
+
+                AusgabeArray.push(`${Konzern} ${Vorderteil} ${BaureiheVerw} ${Nummer}${Pruefziffer} ${(Gefahren || Mitgefahren || Besichtigt) ? '<img src="https://i.imgur.com/jZao7dQ.png" class="mr-2" height="20px" alt="">' : '<img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'}${(Gefahren || Mitgefahren) ? '<img src="https://i.imgur.com/N8izYzx.png" class="mr-2" height="20px" alt="">' : '<img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'}${Gefahren ? '<img src="https://i.imgur.com/HKWV9id.png" class="mr-2" height="20px" alt="">' : '<img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'}\n`)
+            }
+
+            AusgabeArray.sort();
+
+            var AnzahlSichtungenBaureiheVerw = AusgabeArray.length
+            if(Baureihe == "1144")
+            {
+                AnzahlSichtungenBaureiheVerw --;
+            }
+            else
+            {
+                var AnzahlGesamt = 0
+
+                if(Baureihe == "1016") { AnzahlGesamt = 50 }
+                if(Baureihe == "1116") { AnzahlGesamt = 282 }
+                if(Baureihe == "1216") { AnzahlGesamt = 50 }
+                if(Baureihe == "1293") { AnzahlGesamt = 113 }
+                if(Baureihe == "2016") { AnzahlGesamt = 100 }
+                if(Baureihe == "1163") { AnzahlGesamt = 20 }
+                if(Baureihe == "1063") { AnzahlGesamt = 48 }
+                if(Baureihe == "1064") { AnzahlGesamt = 10 }
+                if(Baureihe == "2068") { AnzahlGesamt = 57 }
+                if(Baureihe == "2070") { AnzahlGesamt = 90 }
+
+                if(AnzahlGesamt > 0)
+                {
+                    var ProzentString = ((AnzahlSichtungenBaureiheVerw / parseFloat(AnzahlGesamt)) * 100).toFixed(0)
+                    AnzahlSichtungenBaureiheVerw = `${AnzahlSichtungenBaureiheVerw} / ${AnzahlGesamt} (${ProzentString}%)<br><br>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: ${ProzentString}%" aria-valuenow="${ProzentString}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>`
+                }
+            }
+
+            SeiteWechseln("AuflistungLoknummern")
+            document.getElementById("AuflistungLoknummern_Ueberschrift_Label").innerHTML = `${Konzern} ${Vorderteil} ${Baureihe}<br>Bereits gesichtet: ${AnzahlSichtungenBaureiheVerw}`
+            document.getElementById("AuflistungLoknummern_Tabelle").innerHTML = ""
+            
+
+         
+            
+
+            for(Eintrag in AusgabeArray)
+            {
+                var BaureiheBildVerw = Baureihe
+                var AusgabeVerw = AusgabeArray[Eintrag]
+
+                if(AusgabeArray[Eintrag].includes("9181 1144 001"))
+                {
+                    BaureiheBildVerw = "1044501"
+                    AusgabeVerw = 'A-ÖBB 9181 1044 501-3 <img src="https://i.imgur.com/jZao7dQ.png" class="mr-2" height="20px" alt=""><img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt=""><img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 002"))
+                {
+                    AusgabeVerw = 'Lokkasten ÖBB 1044.02 <img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt=""><img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt=""><img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 092") || AusgabeArray[Eintrag].includes("9181 1144 117"))
+                {
+                    BaureiheBildVerw = "1144SB"
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 040"))
+                {
+                    BaureiheBildVerw = "1144040"
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 283"))
+                {
+                    BaureiheBildVerw = "1144283"
+                }
+                else if(AusgabeArray[Eintrag].includes("9181 1144 017"))
+                {
+                    BaureiheBildVerw = "1144017"
+                }
+
+                AuflistungLoknummern_Tabelle.innerHTML += 
+                `
+                <tr>
+                <td><img src="${GetImagePath(BaureiheBildVerw)}" style="width: 80px" alt="..." class="">&nbsp;&nbsp;&nbsp;${AusgabeVerw}</td>
+                </tr>`
+            }
+        })()
+    }
+
+    function GetVorderteilFuerBaureihe(Baureihe)
+    {
+        if(Baureihe[0] == "1")
+        { //Elektroloks
+            return 9181
+        }
+        else if(Baureihe[0] == "2")
+        { //Dieselloks
+            return 9281
+        }
+        else if(Baureihe[0] == "8")
+        { //Steuerwagen
+            return 5081
+        }
+        else if(Baureihe[0] == "4")
+        { //Triebwagen
+            return 9481
+        }
+        else
+        { //ETR 170
+            return 9483
+        }
+        
+        alert()
+    }
+
+    function OBB_Pruefziffer_Berechnen(elevenDigitNumber)
+    {
+        try
+        {
+            if (elevenDigitNumber.length === 11)
+            {
+                let digits = [];
+                let checkDigit = 0;
+
+                for (let i = 0; i < elevenDigitNumber.length; i++)
+                {
+                    digits.push(parseInt(elevenDigitNumber[i]));
+                }
+
+                let twoOneMultiplier = 2;
+
+                for (let i = 0; i < digits.length; i++)
+                {
+                    digits[i] = digits[i] * twoOneMultiplier;
+
+                    if (twoOneMultiplier === 1)
+                    {
+                        twoOneMultiplier = 2;
+                    }
+                    else
+                    {
+                        twoOneMultiplier = 1;
+                    }
+                }
+
+                for (let i = 0; i < digits.length; i++)
+                {
+                    if (digits[i] > 9)
+                    {
+                        let digit1 = parseInt(digits[i].toString()[0]);
+                        let digit2 = parseInt(digits[i].toString()[1]);
+                        let digitSum = digit1 + digit2;
+
+                        digits[i] = digitSum;
+                    }
+                }
+
+                for (let i = 0; i < digits.length; i++)
+                {
+                    checkDigit += digits[i];
+                }
+
+                for (let i = 1; i <= 10; i++)
+                {
+                    let currentTenStep = i * 10;
+
+                    if (checkDigit <= currentTenStep)
+                    {
+                        checkDigit = currentTenStep - checkDigit;
+                        break;
+                    }
+                }
+
+                return checkDigit;
+            }
+            else
+            {
+                return 404;
+            }
+        }
+        catch (error)
+        {
+            return 404;
+        }
+    }
+
+    function GetImagePath(Baureihe)
+    {
+        if(Baureihe == "1044501") {return "https://i.imgur.com/9AZiCoi.png"}
+        if(Baureihe == "1144SB") {return "https://i.imgur.com/9jTDWhW.png"}
+        if(Baureihe == "1144040") { return "https://i.imgur.com/7pDPzO0.png"}
+        if(Baureihe == "1144283") {return "https://i.imgur.com/Ze1u1iZ.png"}
+        if(Baureihe == "1144017") {return "https://i.imgur.com/hiV55IO.png"}
+
+        if(Baureihe == "1144") { return "https://i.imgur.com/1gejanX.png" }
+        if(Baureihe == "1016"
+        || Baureihe == "1116") { return "https://i.imgur.com/OlOBX0t.png" }
+        if(Baureihe == "1216") { return "https://i.imgur.com/GaA6DBK.png" }
+        if(Baureihe == "1293") { return "https://i.imgur.com/w2C4cDL.png" }
+        if(Baureihe == "2016") { return "https://i.imgur.com/7nKbKLZ.png" }
+        if(Baureihe == "8073") { return "https://i.imgur.com/1JCxN9o.png" }
+        if(Baureihe == "8633") { return "https://i.imgur.com/GXr14rU.png" }
+        if(Baureihe == "8090") { return "https://i.imgur.com/oHH4vA3.png" }
+        if(Baureihe == "8091") { return "https://i.imgur.com/zIRoAZl.png" }
+        if(Baureihe == "4020") { return "https://i.imgur.com/Eb0D9Vo.png" }
+        if(Baureihe == "1142") { return "https://i.imgur.com/zjapkMw.png" }
+        if(Baureihe == "4023"
+        || Baureihe == "4024"
+        || Baureihe == "4124") { return "https://i.imgur.com/vSAGeLE.png" }
+        if(Baureihe == "4744"
+        || Baureihe == "4746") { return "https://i.imgur.com/KLN2Fy1.png" }
+        if(Baureihe == "4748") { return "https://i.imgur.com/5wOCqr9.png" }
+        if(Baureihe == "SETR170"
+        || Baureihe == "TETR170") { return "https://i.imgur.com/860rbBr.png" }
+
+        if(Baureihe == "1163") { return "https://i.imgur.com/FvCC40L.png" }
+        if(Baureihe == "1063") { return "https://i.imgur.com/J7O7ypw.png" }
+        if(Baureihe == "1064") { return "https://i.imgur.com/f6P29vw.png" }
+        if(Baureihe == "2068") { return "https://i.imgur.com/JiFuU7L.png" }
+        if(Baureihe == "2070") { return "https://i.imgur.com/hGPu0rW.png" }
+    }
+
+    async function GetAlleSichtungen()
+    {
+        var AlleSichtungen = [];
+
+        var AlleBaureihen = await GetSubvariablen("Sichtungen");
+
+        for(Baureihe of AlleBaureihen)
+        {
+            var AlleSichtungenDieserBaureihe = await GetSubvariablen(Baureihe);
+
+            for(Sichtung of AlleSichtungenDieserBaureihe)
+            {
+                var SlashSplit = Sichtung.split("/");
+                var Nummer = SlashSplit[SlashSplit.length - 1]
+                var PushString = `${Baureihe.replace("Sichtungen/", "")}.${Nummer}`;
+                AlleSichtungen.push(PushString);
+            }
+        }
+
+        return AlleSichtungen;
+    }
+
+    if(cookieExists("PasswortGesichteteLoks"))
+    {
+        InitGesichteteLoks(getCookie("PasswortGesichteteLoks"))
+    }
+    else
+    {
+        SeiteWechseln("AnmeldungFenster")
+    }
+</script>
+
+<!-- Neues Fahrzeug hinzufuegen -->
+<script>
+    function NeuesFahrzeugHinzufuegenSeiteStarten()
+    {
+        document.getElementById("FahrzeugHinzufuegen_Baureihe_TextBox").value = "";
+        document.getElementById("FahrzeugHinzufuegen_Nummer_TextBox").value = "";
+
+        SeiteWechseln('FahrzeugHinzufuegen');
+    }
+
+
+
+    function FahrzeugHinzufuegenFunktion(Baureihe, Nummer)
+    {
+        if(
+            Baureihe == "1144" || 
+            Baureihe == "1016" || 
+            Baureihe == "1116" ||
+            Baureihe == "1216" ||
+            Baureihe == "1293" ||
+            Baureihe == "2016" ||
+            Baureihe == "8073" ||
+            Baureihe == "8090" ||
+            Baureihe == "4024" ||
+            Baureihe == "4124" ||
+            Baureihe == "4744" ||
+            Baureihe == "4746" ||
+            Baureihe == "4748" ||
+            Baureihe == "SETR170" ||
+            Baureihe == "TETR170" ||
+            Baureihe == "1163" ||
+            Baureihe == "1063" ||
+            Baureihe == "2068" ||
+            Baureihe == "2070" ||
+            Baureihe == "1142" ||
+            Baureihe == "1064" ||
+            Baureihe == "4020" ||
+            Baureihe == "4023" ||
+            Baureihe == "8633" ||
+            Baureihe == "8091"         
+        )
+        {
+            if(Nummer.length == 3)
+            {
+
+                (async () =>
+                {                 
+                    var Ladezeichen = document.getElementById("FahrzeugHinzufuegen_Ladezeichen")
+                    Ladezeichen.style.display = "inline-block"
+                    var NeueSichtung = `${Baureihe}.${Nummer}`;
+                    var AlleSichtungen = await GetAlleSichtungen();
+
+                    if(AlleSichtungen.includes(NeueSichtung))
+                    {
+                        AbschlussHinzufuegenSeiteAnzeigen(false, NeueSichtung)
+                    }
+                    else
+                    {
+                        var Zeit = new Date().getTime();
+                        await SetVariable(`Sichtungen/${Baureihe}/${Nummer}`, Nummer.toString())
+                        AbschlussHinzufuegenSeiteAnzeigen(true, NeueSichtung)
+                    }
+                    Ladezeichen.style.display = "none"
+                })()
+            }
+            else
+            {
+                alert("Fehlerhafte Eingabe der Nummer");
+            }
+        }
+        else
+        {
+            alert("Fehlerhafte Eingabe der Baureihe!");
+        }
+        
+        
+    }
+
+    function AbschlussHinzufuegenSeiteAnzeigen(LokWarNeu, BaureiheNummer)
+    {
+        SeiteWechseln("AbschlussHinzufuegenSeite")
+        var AbschlussHinzufuegenSeite_Ueberschrift = document.getElementById("AbschlussHinzufuegenSeite_Ueberschrift");
+        var AbschlussHinzufuegenSeite_BaureiheNummer = document.getElementById("AbschlussHinzufuegenSeite_BaureiheNummer");
+        
+        if(LokWarNeu)
+        {
+            AbschlussHinzufuegenSeite_Ueberschrift.innerHTML = "Neue Sichtung!";
+            AbschlussHinzufuegenSeite_BaureiheNummer.classList = "alert alert-success mt-2";
+            AbschlussHinzufuegenSeite_BaureiheNummer.innerHTML = BaureiheNummer;
+        }
+        else
+        {
+            AbschlussHinzufuegenSeite_Ueberschrift.innerHTML = "Bereits gesehen ...";
+            AbschlussHinzufuegenSeite_BaureiheNummer.classList = "alert alert-warning mt-2";
+            AbschlussHinzufuegenSeite_BaureiheNummer.innerHTML = BaureiheNummer;
+        }
+    }
+
+    // function ManuellHinzufuegen()
+    // {
+    //     (async () =>
+    //     {   
+    //         var Eingabe = "8073 039;1016 012;1144 252;1144 243;1144 242"
+            
+    //         var Lines = Eingabe.split(';');
+    //         for(i in Lines)
+    //         {
+    //             var Baureihe = Lines[i].split(" ")[0];
+    //             var Nummer = Lines[i].split(" ")[1];
+    //             await SetVariable(`Sichtungen/${Baureihe}/${Nummer}`, Nummer.toString())
+    //             console.log(`Lok Nr    ${i}   (${Baureihe}.${Nummer})    manuell hinzugefügt`)
+    //         }
+
+    //     })()   
+    // }
+</script>
+
+<!-- Prüfziffer berechnen -->
+<script>
+    function PruefzifferBerechnen_ElfstelligeNummer_TextChanged()
+    {
+        var TextBoxInhalt = PruefzifferBerechnen_ElfstelligeNummer.value;
+
+        if(TextBoxInhalt.length == 11)
+        {
+            var Pruefziffer = OBB_Pruefziffer_Berechnen(TextBoxInhalt);
+
+            if(Pruefziffer != NaN && Pruefziffer != null && Pruefziffer != undefined && Pruefziffer.toString() != "NaN")
+            {
+                PruefzifferBerechnen_PruefzifferDIV.style.display = "inline-block";
+                PruefzifferBerechnen_PruefzifferLabel.innerHTML = Pruefziffer;
+            }
+            else
+            {
+                PruefzifferBerechnen_PruefzifferDIV.style.display = "none";
+                PruefzifferBerechnen_PruefzifferLabel.innerHTML = "?";
+            }    
+        }
+        else
+        {
+            PruefzifferBerechnen_PruefzifferDIV.style.display = "none";
+            PruefzifferBerechnen_PruefzifferLabel.innerHTML = "?";
+        }
+    }
+</script>
+
+<!-- Lokfinder -->
+<script>    
+    function Lokfinder_GetStandorte(SearchString)
+    {
+        
+        Lokfinder_UpdateLabelFuerLok("1216.0229");
+        Lokfinder_UpdateLabelFuerLok("8090.0744");
+        Lokfinder_UpdateLabelFuerLok("4124.0014");
+        Lokfinder_UpdateLabelFuerLok("4124.0013");
+        Lokfinder_UpdateLabelFuerLok("4024.0130");
+        Lokfinder_UpdateLabelFuerLok("4024.0123");
+        Lokfinder_UpdateLabelFuerLok("4024.0120");
+        Lokfinder_UpdateLabelFuerLok("4024.0118");
+        Lokfinder_UpdateLabelFuerLok("4024.0103");
+        Lokfinder_UpdateLabelFuerLok("4024.0089");
+        Lokfinder_UpdateLabelFuerLok("4024.0088");
+        Lokfinder_UpdateLabelFuerLok("4024.0085");
+        Lokfinder_UpdateLabelFuerLok("4024.0016");
+        Lokfinder_UpdateLabelFuerLok("4024.0015");
+        Lokfinder_UpdateLabelFuerLok("4024.0014");
+        Lokfinder_UpdateLabelFuerLok("1293.0200");
+        Lokfinder_UpdateLabelFuerLok("1293.0018");
+        Lokfinder_UpdateLabelFuerLok("1216.0210");
+        Lokfinder_UpdateLabelFuerLok("1216.0022");
+        Lokfinder_UpdateLabelFuerLok("1216.0019");
+        Lokfinder_UpdateLabelFuerLok("1216.0012");
+        Lokfinder_UpdateLabelFuerLok("1116.0276");
+        Lokfinder_UpdateLabelFuerLok("1116.0250");
+        Lokfinder_UpdateLabelFuerLok("1116.0249");
+        Lokfinder_UpdateLabelFuerLok("1116.0231");
+        Lokfinder_UpdateLabelFuerLok("1116.0229");
+        Lokfinder_UpdateLabelFuerLok("1116.0222");
+        Lokfinder_UpdateLabelFuerLok("1116.0200");
+        Lokfinder_UpdateLabelFuerLok("1116.0199");
+        Lokfinder_UpdateLabelFuerLok("1116.0195");
+        Lokfinder_UpdateLabelFuerLok("1116.0182");
+        Lokfinder_UpdateLabelFuerLok("1116.0181");
+        Lokfinder_UpdateLabelFuerLok("1116.0165");
+        Lokfinder_UpdateLabelFuerLok("1116.0158");
+        Lokfinder_UpdateLabelFuerLok("1116.0157");
+        Lokfinder_UpdateLabelFuerLok("1116.0153");
+        Lokfinder_UpdateLabelFuerLok("1116.0143");
+        Lokfinder_UpdateLabelFuerLok("1116.0077");
+        Lokfinder_UpdateLabelFuerLok("1116.0016");
+        Lokfinder_UpdateLabelFuerLok("1063.0039");
+        Lokfinder_UpdateLabelFuerLok("1016.0023");
+        Lokfinder_UpdateLabelFuerLok("1016.0021");
+        Lokfinder_UpdateLabelFuerLok("1016.0020");
+    }
+
+    function Lokfinder_UpdateLabelFuerLok(Lok)
+    {
+        if(Lok != "")
+        {
+            fetch(`https://konzern-apps.web.oebb.at/lok/index/${Lok}`)
+            .then(response => response.json())
+            .then(data => {
+
+                try
+                {
+                    var Ankunft = data[data.length - 1].arrival;
+                    if(Ankunft == null)
+                    {
+                        Ankunft = "unbekannt";
+                    }
+                    else
+                    {
+                        Ankunft = formatiereZeitInWien(Ankunft);
+                    }
+
+                    var Abfahrt = data[data.length - 1].departure;
+                    if(Abfahrt == null)
+                    {
+                        Abfahrt = "unbekannt";
+                    }
+                    else
+                    {
+                        Abfahrt = formatiereZeitInWien(Abfahrt);
+                    }
+
+                    document.getElementById(`Standort_${Lok}`).innerHTML = `Nächster Halt in:<br><strong>${data[data.length - 1].name}</strong><br><br>Ankunft: <strong>${Ankunft}</strong><br>Abfahrt: <strong>${Abfahrt}</strong><br>`;
+                }
+                catch (error)
+                {
+                    document.getElementById(`Standort_${Lok}`).innerHTML = `Aktuell leider keine Daten`;
+                }
+                
+                
+            })
+            .catch(error => { document.getElementById(`Standort_${Lok}`).innerHTML = `Aktuell leider keine Daten`; });
+        }        
+    }
+
+    function formatiereZeitInWien(zeitstempel)
+    {
+        const datum = new Date(zeitstempel);
+
+        const formatter = new Intl.DateTimeFormat('de-AT', {
+            timeZone: 'Europe/Vienna',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+
+        const formatierteZeit = formatter.format(datum);
+        return formatierteZeit;
+    }
+</script>
+
+<!-- Lok schon gesehen? -->
+<script>
+    function SchonGesehenUeberpruefen(Eingabe)
+    {
+        (async () =>
+        {                 
+            if(Eingabe.includes(" "))
+            {
+                var Lok = parseInt(Eingabe.split(" ")[0])
+                var Nummer = parseInt(Eingabe.split(" ")[1])
+
+                if(Number.isInteger(Lok))
+                {
+                    if(Eingabe.split(" ")[0].length == 4)
+                    {
+                        if(Number.isInteger(Nummer))
+                        {
+                            if(Eingabe.split(" ")[1].length == 3)
+                            {
+
+                                var Baureihe = Eingabe.split(" ")[0]
+                                var Nummer = Eingabe.split(" ")[1]
+
+                                var VarInhalt = await GetVariable(`Sichtungen/${Baureihe}/${Nummer}`)
+                                var Gesehen = false
+                                if(VarInhalt) { Gesehen = true }
+                                var GesehenString = Gesehen ? "JA" : "NEIN"
+                                
+                                var Vorderteil = GetVorderteilFuerBaureihe(Baureihe)
+                                
+
+                                SchonGesehenErgebnis.innerHTML = `
+                                <img style="width: 200px" src="${GetImagePath(Lok)}"><br><br>
+                                <strong><strong style="font-family: 'Courier New', Courier, monospace; font-size:x-large;">A-ÖBB ${Vorderteil} ${Baureihe} ${Nummer}-${OBB_Pruefziffer_Berechnen(`${Vorderteil}${Baureihe}${Nummer}`)}</strong><br></strong><br>
+                                <h1 style="color: ${Gesehen ? "rgb(60,179,113)" : "rgb(204, 76, 76)"}">${Gesehen ? `<img src="https://i.imgur.com/X94IPqU.png" class="mr-2" height="32px" alt="">` : `<img src="https://i.imgur.com/Rj1vuiK.png" class="mr-2" height="32px" alt="">`} ${GesehenString}</h1> `
+                            }
+                            else
+                            {
+                                FehlerhafteEingabeSchonGesehenAnzeigen()
+                            }                       
+                        }
+                        else
+                        {
+                            FehlerhafteEingabeSchonGesehenAnzeigen()
+                        }
+                    }
+                    else
+                    {
+                        FehlerhafteEingabeSchonGesehenAnzeigen()
+                    } //<h1>${await GetVariable(`Sichtungen/${parseInt(Eingabe.split(" ")[0])}/${parseInt(Eingabe.split(" ")[1])}`) == `${parseInt(Eingabe.split(" ")[1])}` ? "JA" : "NEIN"}</h1> `
+                }
+                else
+                {
+                    FehlerhafteEingabeSchonGesehenAnzeigen()
+                }
+            }
+            else
+            {
+                FehlerhafteEingabeSchonGesehenAnzeigen()
+            }
+        })()
+    }
+
+    function FehlerhafteEingabeSchonGesehenAnzeigen()
+    {
+        SchonGesehenErgebnis.innerHTML = "Fehlerhafte Eingabe"
+    }
+</script>
