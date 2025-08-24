@@ -279,7 +279,11 @@
             <button onclick="AuflistungLoknummernStarten('2070', '9281')" type="button" class="btn btn-danger">A-ÖBB 9281 2070</button><br><br>            
             <hr><br><br>
             <h1 class="display-4" style="font-size:xx-large;">Zusammenfassung</h1>
-            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:<br><br><button type="button" onclick="AnzahlSichtungenGesamtAktualisieren()" class="btn btn-light">Aktualisieren</button><br><div id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; "><br><div class="spinner-border text-secondary" role="status" style="text-align: center;"></div></div><br><strong style="color: mediumseagreen; font-size: xx-large;" id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
+            <h1 class="display-4" style="font-size:x-large;">Anzahl Sichtungen gesamt:
+                <br><br>
+                <button type="button" onclick="AnzahlSichtungenGesamtAktualisieren()" class="btn btn-light">Aktualisieren</button><br><br>
+                <button type="button" onclick="AlleSichtungenKopieren()" class="btn btn-light">Kopieren</button>
+                <br><div id="Hauptseite_AnzahlSichtungenGesamt_Ladezeichen" style="display: none; "><br><div class="spinner-border text-secondary" role="status" style="text-align: center;"></div></div><br><strong style="color: mediumseagreen; font-size: xx-large;" id="Hauptseite_AnzahlSichtungenGesamt"></strong></h1>         
             <br>
 
             <hr>
@@ -1067,6 +1071,25 @@
         })()
     }
 
+    function AlleSichtungenKopieren()
+    {
+        (async () =>
+        {                 
+            var AlleSichtungen = await GetVariable("Sichtungen")
+            var Ausgabe = ""
+
+            for (Baureihe of Object.entries(AlleSichtungen))
+            {
+                for (Lok of Object.entries(Baureihe[1]))
+                {		
+                    Ausgabe += `${Baureihe[0]} ${Lok[0]}\n`
+                }
+            }
+
+            navigator.clipboard.writeText(Ausgabe)
+        })()       
+    }
+
     function GetGefahreneLoks()
     {
         SeiteWechseln("GefahreneLoksSeite")
@@ -1277,6 +1300,11 @@
                 var Pruefziffer = "";
                 var BaureiheVerw = Baureihe;
 
+                if(Baureihe == 8633 && Nummer.startsWith("9"))
+                {
+                    BaureiheVerw = "8033"
+                }
+
                 if(Konzern == "A-ÖBB")
                 {
                     Pruefziffer = `-${OBB_Pruefziffer_Berechnen(`${Vorderteil}${Baureihe}${Nummer}`)}`
@@ -1284,6 +1312,14 @@
                 else
                 {
                     BaureiheVerw = "ETR170";
+                }
+
+                if(Baureihe == 1142 && Nummer == 005)
+                {
+                    BaureiheVerw = "1042"
+                    Konzern = "Südbahnmuseum"
+                    Vorderteil = "Mürzzuschlag -"
+                    Pruefziffer = ""
                 }
 
                 AusgabeArray.push(`${Konzern} ${Vorderteil} ${BaureiheVerw} ${Nummer}${Pruefziffer} ${(Gefahren || Mitgefahren || Besichtigt) ? '<img src="https://i.imgur.com/jZao7dQ.png" class="mr-2" height="20px" alt="">' : '<img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'}${(Gefahren || Mitgefahren) ? '<img src="https://i.imgur.com/N8izYzx.png" class="mr-2" height="20px" alt="">' : '<img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'}${Gefahren ? '<img src="https://i.imgur.com/HKWV9id.png" class="mr-2" height="20px" alt="">' : '<img src="https://i.imgur.com/AAfnxSB.png" class="mr-2" height="20px" alt="">'}\n`)
@@ -1358,6 +1394,10 @@
                 else if(AusgabeArray[Eintrag].includes("9181 1144 017"))
                 {
                     BaureiheBildVerw = "1144017"
+                }
+                if(AusgabeArray[Eintrag].includes("8033"))
+                {
+                    BaureiheBildVerw = "8033CAT"                    
                 }
 
                 AuflistungLoknummern_Tabelle.innerHTML += 
@@ -1500,6 +1540,7 @@
         if(Baureihe == "1064") { return "https://i.imgur.com/f6P29vw.png" }
         if(Baureihe == "2068") { return "https://i.imgur.com/JiFuU7L.png" }
         if(Baureihe == "2070") { return "https://i.imgur.com/hGPu0rW.png" }
+        if(Baureihe == "8033CAT") { return "https://i.imgur.com/LLyospI.png" }
     }
 
     async function GetAlleSichtungen()
